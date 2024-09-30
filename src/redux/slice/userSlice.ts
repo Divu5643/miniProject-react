@@ -1,29 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-
+import { Iuser } from '../../utils/Interfaces/Iuser'
 
 export interface ProjectState {
-value:Number,
+userList :Iuser[];
 }
 
 const initialState: ProjectState = {
-value:0
+userList:[],
 }
 
 export const userSlice = createSlice({
   name: 'counter',
   initialState,
   reducers: {
-    AddProject: (state, action: PayloadAction<Number>) => {
+    setUserList: (state, action: PayloadAction<Iuser[]>) => {
       console.log(action);
-      state.value = action.payload
+      state.userList = [...action.payload]
       return state
-    },
+    },  
    
   },
 })
 
 
-export const { AddProject } = userSlice.actions
+export const { setUserList } = userSlice.actions
 
 export default userSlice.reducer

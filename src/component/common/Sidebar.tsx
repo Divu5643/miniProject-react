@@ -3,6 +3,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { useNavigate } from "react-router-dom";
 
+
 export const SideBar = ({ navItemList,ChildComponent=()=>{return <></>}  }: { navItemList: any[],ChildComponent:React.FC }) => {
   const [open, setOpen] = React.useState(true);
   return (
@@ -26,7 +27,7 @@ export const SideBar = ({ navItemList,ChildComponent=()=>{return <></>}  }: { na
           ))}
         </div>
       </div>
-      <div style={{marginLeft: open ? "250px" : "80px", transition:"1s"}} >
+      <div style={{marginLeft: open ? "250px" : "80px", transition:"1s",padding:"1rem"}} >
           <ChildComponent />
       </div>
     </>

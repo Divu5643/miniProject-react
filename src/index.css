@@ -50,10 +50,20 @@
   margin: 1.5rem auto;
   display: flex;
   font-size: 1.2rem;
+  font-weight: 600;
   gap: 2rem;
   align-items: center;
   cursor: pointer;
 }
-/* .box{
-  background-color: "red";
-} */
+/* common for all Pages */
+.page-header{
+  padding: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.page-title{
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans;
+  font-weight: 700;
+  margin: auto;
+  color: var(--lightSecondaryColor);
+}
