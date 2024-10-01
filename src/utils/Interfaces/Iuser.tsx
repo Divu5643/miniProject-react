@@ -1,5 +1,5 @@
 interface Iuser{
-    userId:number;
+    userid:number;
     name:string;
     email:string;
     password:string;

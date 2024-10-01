@@ -1,29 +1,16 @@
-import {
-  Button,
-  MenuItem,
-  Snackbar,
-  TextField,
-} from "@mui/material";
-import React from "react";
-import Grid from "@mui/material/Grid2";
-import { Iuser } from "../../utils/Interfaces/Iuser";
-import employeeSchema from "../../validation/AddEmployeeValidation";
-import { ValidationError } from "yup";
-import { useNavigate } from "react-router-dom";
-import Axios from "../../axios/config";
-
-const AddEmployee = () => {
-  const navigate = useNavigate();
-  const[userSaved,setUserSaved] =  React.useState(false);
-  const [formData, setFormData] = React.useState<Iuser>({
-    userid: 0,
-    name: "",
-    email: "",
-    password: "",
-    role: "",
-    department: "",
-    isDeleted: false,
-  });
+import { Button, MenuItem, Snackbar, TextField } from '@mui/material'
+import Grid  from '@mui/material/Grid2'
+import React from 'react'
+import { useLocation, useNavigate } from "react-router-dom";
+import employeeSchema from '../../validation/AddEmployeeValidation';
+import Axios from '../../axios/config';
+import { ValidationError } from 'yup';
+const EditEmployee = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [userUpdated,setUserUpdated] = React.useState(false);
+  const data = location.state;
+  const [formData, setFormData] = React.useState(data);
   const [error,setError] = React.useState({
     name: "",
     email: "",
@@ -31,7 +18,6 @@ const AddEmployee = () => {
     role: "",
     department: "",
   });
-
   const FormSubmit = async()=>{
     await employeeSchema.validate(formData,{abortEarly:false})
     .then((response)=>{
@@ -40,8 +26,8 @@ const AddEmployee = () => {
         password: "",
         role: "",
         department: "",})
-      Axios.post("/createUser",formData).then((response)=>{
-        setUserSaved(true);
+      Axios.post("/updateUser",formData).then((response)=>{
+        setUserUpdated(true);
         setTimeout(()=>navigate("/admin/employees"),1000);
         
       });
@@ -63,10 +49,11 @@ const AddEmployee = () => {
     });
   }
 
+
   return (
     <>
       <div className="page-header">
-        <h4 className="page-title">Add Employee</h4>
+        <h4 className="page-title">Edit Employee</h4>
       </div>
       <div className="page-content" style={{ padding: "2rem" }}>
         <Grid container rowSpacing={8} columnSpacing={{ xs: 1, sm: 2, md: 8 }}>
@@ -154,13 +141,14 @@ const AddEmployee = () => {
         </Grid>
       </div>
       <Snackbar
-        open={userSaved}
+        open={userUpdated}
         autoHideDuration={6000}
-        onClose={()=>{setUserSaved(false);}}
-        message="Employee Saved"
+        onClose={()=>{setUserUpdated(false);}}
+        message="Employee Updated"
         
       />
     </>
-  );
-};
-export default AddEmployee;
+  )
+}
+
+export default EditEmployee

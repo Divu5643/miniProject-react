@@ -25,4 +25,26 @@ const AdminList = [
     navLink: "/admin/performance",
   },
 ];
-export { AdminList };
+const EmployeeList = [
+  {
+    navName: "Dashboard",
+    navIcon: <Dashboard />,
+    navLink: "/admin",
+  },
+  {
+    navName: "Employees",
+    navIcon: <BadgeIcon />,
+    navLink: "/admin/employees",
+  },
+  {
+    navName: "Goals",
+    navIcon: <FlagIcon />,
+    navLink: "/admin/goal",
+  },
+  {
+    navName: "Performance",
+    navIcon: <ThumbUpIcon />,
+    navLink: "/admin/performance",
+  },
+];
+export { AdminList,EmployeeList };

@@ -5,6 +5,7 @@ import { BrowserRouter, Routes,Route } from'react-router-dom'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import adminRoutes from './router/adminRouter'
 import reviewerRoutes from './router/reviewerRouter'
+import employeeRoutes from './router/employeeRouter'
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <Routes>
       {adminRoutes()}
       {reviewerRoutes()}
+      {employeeRoutes()}
       </Routes>
       </BrowserRouter>
       
