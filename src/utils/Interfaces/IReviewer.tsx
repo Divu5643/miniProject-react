@@ -12,5 +12,6 @@ interface IReviewShow{
      reviewType :string
 }
 
+
 export default IReviewer;
 export type { IReviewShow};

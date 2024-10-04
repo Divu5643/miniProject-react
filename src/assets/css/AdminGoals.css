@@ -1,0 +1,21 @@
+.tabs-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem 1rem 0;
+}
+.filter-container{
+    min-width: 20%;
+}
+.table-cell{
+
+}
+.table-header{
+    background-color: #507687;
+    color: white!important;
+}
+.table-header-data{
+    color: white!important;
+    font-family: 'Poppins',sans-serif!important;
+    font-weight: 700!important;
+}

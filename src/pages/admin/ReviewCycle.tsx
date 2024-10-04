@@ -8,64 +8,119 @@ import {
   TableBody,
   TextField,
   MenuItem,
+  Snackbar,
+  IconButton,
 } from "@mui/material";
-import NoteAddIcon from "@mui/icons-material/NoteAdd";
+
 import { useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import AddReviewModal from "../../component/admin/AddReviewModal";
 import { RootState } from "../../redux/store/store";
 import { Iuser } from "../../utils/Interfaces/Iuser";
 import Axios from "../../axios/config";
-import IReviewer, { IReviewShow } from "../../utils/Interfaces/IReviewer";
+import { IReviewShow } from "../../utils/Interfaces/IReviewer";
 import ReviewerSchema from "../../validation/ReviewerValidation";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { ValidationError } from "yup";
+import { CircularProgress } from "@mui/joy";
+
 
 const ReviewCycle = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
-  const employeeList: Iuser[] = useSelector((state: RootState) =>
-    state.userList.filter((item) => item.role == "employee")
+  const [open, setOpen] = React.useState({open:false,message:""});
+  const closeSnackbar = () => setOpen({open:false,message:""});
+  const openSnackBar = (message:string) =>setOpen({open:true,message:message});
+
+  const [isRequestLoading,setIsRequestLoading] = React.useState(false);
+
+  let tempemployeeList: Iuser[] = useSelector((state: RootState) =>
+    state.userList.filter((item: Iuser) => item.role == "employee")
   );
+  const [employeeList, setEmployeeList] = React.useState(tempemployeeList);
   const managerList: Iuser[] = useSelector((state: RootState) =>
-    state.userList.filter((item) => item.role == "manager")
+    state.userList.filter((item: Iuser) => item.role == "manager")
   );
-  const [formData, setFormData] = useState<IReviewer>({
-    EmployeeId: 0,
-    ManagerId: 0,
+  const [formData, setFormData] = useState<{
+    EmployeeId: string | Number;
+    ManagerId: string | Number;
+    ReviewType: string;
+  }>({
+    EmployeeId: "",
+    ManagerId: "",
     ReviewType: "",
   });
-const [ReviewList,setReviewList] = useState<IReviewShow[]>([]);
+  const [error,setError] =  React.useState({  EmployeeId: "",
+    ManagerId: "",
+    ReviewType: "",})
+  const [ReviewList, setReviewList] = useState<IReviewShow[]>([]);
   const handleAdd = () => {
+    setIsRequestLoading(true);
     ReviewerSchema.validate(formData, { abortEarly: false })
       .then((response) => {
-        // console.log(response)
-        Axios.post("/reviewer/addReviewer",response).then((response)=>{
-          console.log(response);
-        }).catch(error=>{console.log(error);})
+        setError({ EmployeeId: "",
+          ManagerId: "",
+          ReviewType: "",});
+        Axios.post("/reviewer/addReviewer", response)
+          .then((response) => {
+            console.log(response);
+            loadReviewData();
+            setFormData({
+              EmployeeId: "",
+              ManagerId: "",
+              ReviewType: "",
+            });
+            setIsRequestLoading(false);
+          })
+          .catch((error) => {
+            setIsRequestLoading(false);
+            openSnackBar("Cannot Assign Managers :"+error.message);
+          });
       })
       .catch((err: ValidationError) => {
         console.log(err);
         let errArr = err?.inner || [];
         let errorObj: any = {
-          name: "",
-          email: "",
-          password: "",
-          role: "",
-          department: "",
+          EmployeeId: "",
+          ManagerId: "",
+          ReviewType: "",
         };
         errArr.map((err) => {
           console.log(typeof err);
           errorObj[err?.path as string] = err?.message;
-          console.log("Error Object", errorObj);
-          // setError(errorObj);
+          
         });
+        setIsRequestLoading(false);
+        setError(errorObj);
       });
   };
-  useEffect(()=>{
-Axios.get("/reviewer/getReviews").then((response)=>{
-  setReviewList(response.data);
-})
-  },[])
+  const filterEmployeeList = (newReviewList:IReviewShow[])=>{
+    let reviewedIds: Number[] = newReviewList.map((review: IReviewShow) => {
+      return review.employeeId;
+    });
+    setEmployeeList(tempemployeeList.filter((employee) => {
+      return !(reviewedIds.includes(employee.userid));
+    }));
+  }
+  const deleteReview = (reviewId:Number)=>{
+    Axios.put("/reviewer/deleteReview",{reviewId:reviewId}).then((response)=>{
+      var newList = ReviewList.filter((review)=>{return review.reviewId !== reviewId})
+      filterEmployeeList(newList);
+      setReviewList(newList)
+    }).catch((error)=>{
+      console.log(error);
+    });
+  }
+  
+  const loadReviewData = () => {
+    Axios.get("/reviewer/getReviews").then((response) => {
+      setReviewList(response.data);
+      filterEmployeeList(response.data);
+      
+    }).catch((error) => {
+      openSnackBar("Cannot Load Data : "+error.message);
+    });
+  };
+  useEffect(() => {
+    loadReviewData();
+  }, []);
 
   return (
     <>
@@ -75,17 +130,7 @@ Axios.get("/reviewer/getReviews").then((response)=>{
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           <span>Review Cycle</span>
-          <Button
-            variant="outlined"
-            startIcon={<NoteAddIcon />}
-            onClick={() => {
-              setOpen(true);
-            }}
-            sx={{ border: "1px solid #507687", color: "#507687" }}
-          >
-            {" "}
-            Add Review
-          </Button>
+         
         </div>
       </div>
       <div className="page-content">
@@ -127,6 +172,8 @@ Axios.get("/reviewer/getReviews").then((response)=>{
                       });
                     }}
                     required={true}
+                    error= {error.EmployeeId==""?false:true}
+                    helperText={error.EmployeeId}
                   >
                     {employeeList.map((emp) => {
                       return (
@@ -145,7 +192,7 @@ Axios.get("/reviewer/getReviews").then((response)=>{
                   <TextField
                     fullWidth={true}
                     variant="filled"
-                    label="manager"
+                    label="Manager"
                     select={true}
                     required={true}
                     value={formData.ManagerId}
@@ -155,6 +202,8 @@ Axios.get("/reviewer/getReviews").then((response)=>{
                         ManagerId: parseInt(event.target.value),
                       });
                     }}
+                    error= {error.ManagerId==""?false:true}
+                    helperText={error.ManagerId}
                   >
                     {managerList.map((manager) => {
                       return (
@@ -183,40 +232,76 @@ Axios.get("/reviewer/getReviews").then((response)=>{
                         ReviewType: event.target.value,
                       });
                     }}
+                    error= {error.ReviewType==""?false:true}
+                    helperText={error.ReviewType}
                   >
                     <MenuItem value="quaterly">Quaterly</MenuItem>
                     <MenuItem value="yearly">Yearly</MenuItem>
                   </TextField>
                 </TableCell>
                 <TableCell align="center">
-                  <Button
+                  {isRequestLoading?<CircularProgress
+  color="primary"
+  determinate={false}
+  size="md"
+  value={64}
+  variant="plain"
+/>:<Button
                     onClick={() => {
                       handleAdd();
                     }}
                     variant="contained"
                     sx={{ backgroundColor: "#507687" }}
                   >
-                    {" "}
+                  
                     Add
-                  </Button>
+                  </Button>}
+                  
                 </TableCell>
               </TableRow>
-              {ReviewList.map((review:IReviewShow)=>{
-                return (<TableRow>
-                  <TableCell className="table-data" align="left" >{review.employeeName}</TableCell>
-                  <TableCell className="table-data" align="left" >{review.managerName}</TableCell>
-                  <TableCell className="table-data" align="left" >{review.reviewType}</TableCell>
-                  <TableCell align="center" >
-                    <Button variant="text">Edit</Button> |{" "}
-                    <Button variant="text">Delete</Button>
-                  </TableCell>
-                </TableRow>)
+              {ReviewList.map((review: IReviewShow) => {
+                return (
+                  <TableRow>
+                    <TableCell className="table-data" align="left">
+                      {review.employeeName}
+                    </TableCell>
+                    <TableCell className="table-data" align="left">
+                      {review.managerName}
+                    </TableCell>
+                    <TableCell className="table-data" align="left">
+                      {review.reviewType}
+                    </TableCell>
+                    <TableCell align="center">
+                      
+                      <Button variant="text" onClick={()=>{deleteReview(review.reviewId)}}>Delete</Button>
+                    </TableCell>
+                  </TableRow>
+                );
               })}
             </TableBody>
           </Table>
         </TableContainer>
+        <Snackbar
+        anchorOrigin={{ horizontal:'left',vertical: 'bottom' }}
+        sx={{maxWidth: "250px"}}
+        open={open.open}
+        autoHideDuration={4000}
+        onClose={closeSnackbar}
+        message={open.message}
+        action={<>
+          <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={closeSnackbar}
+          >
+          <CloseRoundedIcon fontSize="small" />
+        </IconButton>
+          </>
+        }
+      />
       </div>
-      {/* <AddReviewModal open={open} setOpen={setOpen} /> */}
+      
     </>
   );
 };

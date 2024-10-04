@@ -1,41 +1,28 @@
-import { Skeleton } from "@mui/material";
+import { Skeleton, TableCell, TableRow } from "@mui/material";
 import React from "react";
 
-const TableSkeletonLoading = () => {
+const TableSkeletonLoading = ( {column = 0} : {column:number}) => {
+  var list=[];
+  for(var i = 0; i < column;i++){
+    list.push(i);
+  }
   return (
     <>
-      <div  style={{ display: "flex", gap: "20px",padding:"2rem" }}>
-        <Skeleton
+        <TableRow>
+      <div  style={{ display: "flex",padding:"2rem" }}>
+        {list.map(() => {
+       return <TableCell sx={{flexGrow:1}}>    
+            <Skeleton
           animation="wave"
+          width={"225px"}
           variant="rectangular"
-          width={200}
           height={50}
-        />
-        <Skeleton
-          animation="wave"
-          variant="rectangular"
-          width={200}
-          height={50}
-        />
-        <Skeleton
-          animation="wave"
-          variant="rectangular"
-          width={200}
-          height={50}
-        />
-        <Skeleton
-          animation="wave"
-          variant="rectangular"
-          width={200}
-          height={50}
-        />
-        <Skeleton
-          animation="wave"
-          variant="rectangular"
-          width={200}
-          height={50}
-        />
+          />
+          </TableCell>
+        })}
       </div>
+        </TableRow>
+       
     </>
   );
 };

@@ -6,6 +6,7 @@ import AdminEmployee from "../pages/admin/AdminEmployee";
 import AddEmployee from "../pages/admin/AddEmployee";
 import EditEmployee from "../pages/admin/EditEmployee";
 import ReviewCycle from "../pages/admin/ReviewCycle";
+import AdminGoals from "../pages/admin/AdminGoals";
 
 const adminRoutes = () => {
   return (
@@ -29,7 +30,7 @@ const adminRoutes = () => {
         }
       />
       <Route path="/admin/goal" element={<div>
-        <SideBar navItemList={AdminList} ChildComponent={()=>{return(<> Goals</>)}} />
+        <SideBar navItemList={AdminList} ChildComponent={AdminGoals} />
         </div>} />
       <Route
         path="/admin/performance"

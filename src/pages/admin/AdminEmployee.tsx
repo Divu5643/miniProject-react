@@ -1,5 +1,7 @@
 import {
   Button,
+  IconButton,
+  Snackbar,
   Tab,
   Table,
   TableBody,
@@ -19,7 +21,7 @@ import { setUserList } from "../../redux/slice/userSlice";
 import { Iuser } from "../../utils/Interfaces/Iuser";
 import { useNavigate } from "react-router-dom";
 import TableSkeletonLoading from "../../component/common/TableSkeletonLoading";
-
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 const AdminEmployee = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ const AdminEmployee = () => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        
         setIsLoading(false);
         setFilterList(currentUserList);
       });
@@ -85,7 +87,7 @@ const AdminEmployee = () => {
         </div>
 
         <div className="table-container">
-        {isLoading ? <TableSkeletonLoading /> :  filterList.length == 0 ? (
+        {isLoading ? <TableSkeletonLoading  column={4} /> :  filterList.length == 0 ? (
             "No Users Found"
           ) : (
             <EmployeeTable userList={filterList} />
@@ -99,6 +101,9 @@ const AdminEmployee = () => {
 
 const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState({open:false,message:""});
+  const closeSnackbar = () => setOpen({open:false,message:""});
+  const openSnackBar = (message:string) =>setOpen({open:true,message:message});
   const HandleDelete = (userID: Number) => {
     console.log("user",userID)
     Axios.post("/deleteUser", { 
@@ -109,6 +114,7 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
       })
       .catch((error) => {
         console.log(error);
+        openSnackBar("Cannot Delete : "+error.message);
       });
       
   };
@@ -168,6 +174,22 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        anchorOrigin={{ horizontal:'left',vertical: 'bottom' }}
+        sx={{maxWidth: "250px"}}
+        open={open.open}
+        autoHideDuration={3000}
+        onClose={closeSnackbar}
+        message={open.message}
+        action={ <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={closeSnackbar}
+        >
+          <CloseRoundedIcon fontSize="small" />
+        </IconButton>}
+      />
     </>
   );
 };
