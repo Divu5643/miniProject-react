@@ -43,7 +43,7 @@
   color: var(--textColor);
 }
 .sidebar-nav{
-  width: 70%;
+  width: 80%;
 }
 .sidebar-item{
   width: 100%;
@@ -66,4 +66,8 @@
   font-weight: 700;
   margin: auto;
   color: var(--lightSecondaryColor);
+}
+.page-content{
+  margin-top: 1.5rem;
+  padding: 1rem;
 }

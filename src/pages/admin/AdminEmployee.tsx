@@ -42,7 +42,8 @@ const AdminEmployee = () => {
         setIsLoading(false);
       })
       .catch((error) => {
-        
+        console.log(error.message);
+        console.log(currentUserList);
         setIsLoading(false);
         setFilterList(currentUserList);
       });

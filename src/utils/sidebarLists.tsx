@@ -2,6 +2,7 @@ import { Dashboard } from "@mui/icons-material";
 import BadgeIcon from '@mui/icons-material/Badge';
 import FlagIcon from '@mui/icons-material/Flag';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const AdminList = [
   {
@@ -29,22 +30,22 @@ const EmployeeList = [
   {
     navName: "Dashboard",
     navIcon: <Dashboard />,
-    navLink: "/admin",
+    navLink: "/employee",
   },
   {
-    navName: "Employees",
+    navName: "Self Assesment",
     navIcon: <BadgeIcon />,
-    navLink: "/admin/employees",
+    navLink: "/employee/selfAssesment",
   },
   {
     navName: "Goals",
     navIcon: <FlagIcon />,
-    navLink: "/admin/goal",
+    navLink: "/employee/goal",
   },
   {
-    navName: "Performance",
-    navIcon: <ThumbUpIcon />,
-    navLink: "/admin/performance",
+    navName: "Profile",
+    navIcon: <AccountCircleIcon />,
+    navLink: "/employee/profile",
   },
 ];
 export { AdminList,EmployeeList };

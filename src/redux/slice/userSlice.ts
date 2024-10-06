@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { Iuser } from '../../utils/Interfaces/Iuser'
+import defaultUserList from '../../test/data'
 
 export interface ProjectState {
 userList :Iuser[],
@@ -11,7 +12,7 @@ userId:Number
 }
 
 const initialState: ProjectState = {
-userList:[],
+userList:defaultUserList,
 username: 'divyansh',
     role: 'admin',
     email: 'divyansh@bfl.com',

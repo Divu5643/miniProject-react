@@ -72,7 +72,7 @@ useEffect(()=>{
             <Tab value="manager" label="Assign Goals" />
           </Tabs>
          {tabValue=="all"&&  <div className="filter-container">
-            <TextField fullWidth={true} variant='filled'  select={true} value={filterValue} onChange={(event)=>{setFilterValue(event.target.value)}}> 
+            <TextField fullWidth={true} variant='standard'  select={true} value={filterValue} onChange={(event)=>{setFilterValue(event.target.value)}}> 
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="progress">In-Progress</MenuItem>

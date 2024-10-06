@@ -161,7 +161,7 @@ const ReviewCycle = () => {
                 >
                   <TextField
                     fullWidth={true}
-                    variant="filled"
+                    variant="standard"
                     label="Employee"
                     select={true}
                     value={formData.EmployeeId}
@@ -191,7 +191,7 @@ const ReviewCycle = () => {
                 >
                   <TextField
                     fullWidth={true}
-                    variant="filled"
+                    variant="standard"
                     label="Manager"
                     select={true}
                     required={true}
@@ -221,7 +221,7 @@ const ReviewCycle = () => {
                 >
                   <TextField
                     fullWidth={true}
-                    variant="filled"
+                    variant="standard"
                     label="Cycle Type"
                     select={true}
                     required={true}

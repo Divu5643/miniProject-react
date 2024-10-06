@@ -8,6 +8,10 @@ import GoalSchema from "../../validation/GoalValidation";
 import { ValidationError } from "yup";
 import Axios from "../../axios/config";
 import { CircularProgress } from "@mui/joy";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const AssignGoals = ({
   loadData,
@@ -26,11 +30,11 @@ const AssignGoals = ({
   const [formData, setFormData] = useState<{
     userId: string | Number;
     goalOutcome: string;
-    completionDate: string;
+    completionDate: Dayjs|null;
   }>({
     userId: "",
     goalOutcome: "",
-    completionDate: "",
+    completionDate: dayjs(),
   });
   const [error, setError] = React.useState({
     userId: "",
@@ -39,6 +43,7 @@ const AssignGoals = ({
   });
 
   const handleSubmit = async () => {
+    console.log(formData);
     setIsRequestLoading(true);
     await GoalSchema.validate(formData, { abortEarly: false })
       .then((response) => {
@@ -49,7 +54,7 @@ const AssignGoals = ({
         Axios.post("/goal/CreateGoal", postBody)
           .then((response) => {
             loadData();
-            setFormData({ userId: "", goalOutcome: "", completionDate: "" });
+            setFormData({ userId: "", goalOutcome: "", completionDate: dayjs() });
             setIsRequestLoading(false);
             openSnackBar("Goal Saved");
           })
@@ -73,12 +78,12 @@ const AssignGoals = ({
   };
   return (
     <>
-      <Grid container rowSpacing={8} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid container rowSpacing={8} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={{display:"flex",justifyContent:"center"}} >
         <Grid size={{xs:10,sm:8,md:4}}>
           <TextField
             fullWidth={true}
             select={true}
-            variant="filled"
+            variant="standard"
             label="Employee"
             value={formData.userId}
             onChange={(event) => {
@@ -101,7 +106,7 @@ const AssignGoals = ({
           <TextField
             fullWidth={true}
             label="Goal Outcome"
-            variant="filled"
+            variant="standard"
             value={formData.goalOutcome}
             onChange={(event) => {
               setFormData({ ...formData, goalOutcome: event.target.value });
@@ -112,18 +117,27 @@ const AssignGoals = ({
         </Grid>
 
         <Grid size={{xs:10,sm:8,md:4}}>
-          <TextField
+          {/* <TextField
             fullWidth={true}
             label="Completion Date"
             type="date"
-            variant="standard"
+            variant="outlined"
             value={formData.completionDate}
             onChange={(event) => {
               setFormData({ ...formData, completionDate: event.target.value });
             }}
             error={error.completionDate == "" ? false : true}
             helperText={error.completionDate}
-          />
+          /> */}
+           <LocalizationProvider dateAdapter={AdapterDayjs} >
+             <DatePicker
+             sx={{width:"100%"}}
+             value={formData.completionDate}
+             onChange={(newValue) => {
+                 setFormData({...formData, completionDate: newValue });
+             }}
+             label="Completion Date" />
+             </LocalizationProvider>
         </Grid>
         <Grid size={{xs:0,sm:0,md:2}}></Grid>
         <Grid size={{xs:10,sm:8,md:4}}>
@@ -139,7 +153,7 @@ const AssignGoals = ({
                 variant="plain"
               />
             ) : (
-              <Button variant="contained" onClick={handleSubmit}>
+              <Button variant="contained" onClick={handleSubmit} sx={{backgroundColor:"#6a9ab0"}} >
                 Save
               </Button>
             )}

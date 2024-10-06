@@ -7,6 +7,7 @@ import AddEmployee from "../pages/admin/AddEmployee";
 import EditEmployee from "../pages/admin/EditEmployee";
 import ReviewCycle from "../pages/admin/ReviewCycle";
 import AdminGoals from "../pages/admin/AdminGoals";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const adminRoutes = () => {
   return (
@@ -15,7 +16,7 @@ const adminRoutes = () => {
         path="/admin"
         element={
           <div>
-            <SideBar navItemList={AdminList}  ChildComponent={()=>{return(<>Dashboard - Charts And stuff for all employee</>)}} />
+            <SideBar navItemList={AdminList}  ChildComponent={AdminDashboard} />
             
           </div>
         }
