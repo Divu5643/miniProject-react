@@ -14,7 +14,7 @@ import {
 
 const AddOrEditEmployee = () => {
     const [formData, setFormData] = React.useState<Iuser>({
-        userId: 0,
+      userid: 0,
         name: "",
         email: "",
         password: "",

@@ -12,6 +12,13 @@ interface IReviewShow{
      reviewType :string
 }
 
+interface IuserByManager{
+        managerId :Number;
+         employeeId :Number;
+         employeeName :string;
+         email :string;
+         department :string;
+}
 
 export default IReviewer;
-export type { IReviewShow};
+export type { IReviewShow,IuserByManager};

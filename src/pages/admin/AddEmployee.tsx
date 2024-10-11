@@ -22,6 +22,7 @@ const AddEmployee = () => {
     password: "",
     role: "",
     department: "",
+    designation:"",
     isDeleted: false,
   });
   const [error,setError] = React.useState({
@@ -29,6 +30,7 @@ const AddEmployee = () => {
     email: "",
     password: "",
     role: "",
+    designation:"",
     department: "",
   });
 
@@ -39,6 +41,7 @@ const AddEmployee = () => {
         email: "",
         password: "",
         role: "",
+        designation:"",
         department: "",})
       Axios.post("/createUser",formData).then((response)=>{
         setUserSaved(true);
@@ -146,6 +149,19 @@ const AddEmployee = () => {
               Employee
             </MenuItem>
             </TextField>
+          </Grid>
+          <Grid size={{xs:10,sm:8,md:5}}>
+            <TextField
+              fullWidth={true}
+              size="medium"
+              variant="outlined"
+              label="Designation"
+              required={true}
+              error={error.designation==""?false:true}
+              helperText={error.designation}
+              value={formData.designation}
+              onChange={(event)=>{setFormData({...formData,designation:event.target.value.toLowerCase()})}}
+            />
           </Grid>
           <Grid size={{xs:10,sm:8,md:5}} spacing={2}>
             <Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained" type="submit"> Submit</Button>

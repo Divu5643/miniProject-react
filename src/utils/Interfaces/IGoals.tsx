@@ -7,6 +7,7 @@ interface IshowGoal{
  assignerName : string,
  assignerId : number,
  status : string,
+ startDate: Date,
 }
 
 

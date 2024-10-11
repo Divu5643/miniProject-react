@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid2";
 import { Button, MenuItem, Paper, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -8,33 +8,36 @@ import GoalSchema from "../../validation/GoalValidation";
 import { ValidationError } from "yup";
 import Axios from "../../axios/config";
 import { CircularProgress } from "@mui/joy";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { Dayjs } from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import IshowGoal from "../../utils/Interfaces/IGoals";
 
 const AssignGoals = ({
   loadData,
   openSnackBar,
+  user,
 }: {
   loadData: Function;
   openSnackBar: Function;
+  user: string;
 }) => {
   const [isRequestLoading, setIsRequestLoading] = React.useState(false);
   const loggedInUserId = useSelector((state: RootState) => {
-    return state.userId;
+    return state.loginData.userId;
   });
-  const userList = useSelector((state: RootState) =>
-    state.userList.filter((item: Iuser) => item.role == "employee")
-  );
+
+  const [userList, setUserList] = React.useState<Iuser[]>([]);
+
   const [formData, setFormData] = useState<{
     userId: string | Number;
     goalOutcome: string;
-    completionDate: Dayjs|null;
+    completionDate: Dayjs | null;
   }>({
     userId: "",
     goalOutcome: "",
-    completionDate: dayjs(),
+    completionDate: null,
   });
   const [error, setError] = React.useState({
     userId: "",
@@ -43,18 +46,22 @@ const AssignGoals = ({
   });
 
   const handleSubmit = async () => {
-    console.log(formData);
+
     setIsRequestLoading(true);
     await GoalSchema.validate(formData, { abortEarly: false })
       .then((response) => {
         setError({ userId: "", goalOutcome: "", completionDate: "" });
-        console.log(loggedInUserId);
-        let postBody = { ...formData, createdBy: loggedInUserId };
-
+       
+        let postBody = { ...formData, createdBy: loggedInUserId,completionDate: formData.completionDate?.format("YYYY-MM-DD") };
+        console.log("postBody:",postBody);
         Axios.post("/goal/CreateGoal", postBody)
           .then((response) => {
             loadData();
-            setFormData({ userId: "", goalOutcome: "", completionDate: dayjs() });
+            setFormData({
+              userId: "",
+              goalOutcome: "",
+              completionDate: dayjs(),
+            });
             setIsRequestLoading(false);
             openSnackBar("Goal Saved");
           })
@@ -64,11 +71,10 @@ const AssignGoals = ({
           });
       })
       .catch((err: ValidationError) => {
-        console.log(err);
+    
         let errArr = err?.inner || [];
         let errorObj: any = { userId: "", goalOutcome: "", completionDate: "" };
         errArr.map((err) => {
-          console.log(typeof err);
           errorObj[err?.path as string] = err?.message;
 
           setError(errorObj);
@@ -76,10 +82,49 @@ const AssignGoals = ({
         });
       });
   };
+
+  const loadEmployeesForManager = () => {
+    Axios.post("/reviewer/getUserByManager", { userID: loggedInUserId })
+      .then((response) => {
+        let newuserList = response.data.map((user: IshowGoal) => {
+          return { userid: user.employeeId, name: user.employeeName };
+        });
+        setUserList(newuserList);
+      })
+      .catch((error) => {
+        openSnackBar(error.message);
+      });
+  };
+  const loadEmployeesForAdmin = () => {
+    Axios.get("/getAllUsers")
+      .then((response) => {
+        setUserList(
+          response.data.filter((user: Iuser) => {
+            return user.role == "employee";
+          })
+        );
+      })
+      .catch((error) => {
+        openSnackBar(error.message);
+      });
+  };
+  useEffect(() => {
+    if (user == "admin") {
+      loadEmployeesForAdmin();
+    } else {
+      loadEmployeesForManager();
+    }
+  }, []);
+
   return (
     <>
-      <Grid container rowSpacing={8} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={{display:"flex",justifyContent:"center"}} >
-        <Grid size={{xs:10,sm:8,md:4}}>
+      <Grid
+        container
+        rowSpacing={8}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        sx={{ display: "flex", justifyContent: "center" }}
+      >
+        <Grid size={{ xs: 10, sm: 8, md: 4 }}>
           <TextField
             fullWidth={true}
             select={true}
@@ -93,6 +138,7 @@ const AssignGoals = ({
             helperText={error.userId}
           >
             {userList.map((user) => {
+             
               return (
                 <MenuItem key={user.userid} value={user.userid}>
                   {user.name}
@@ -101,8 +147,8 @@ const AssignGoals = ({
             })}
           </TextField>
         </Grid>
-        <Grid size={{xs:0,sm:0,md:2}}></Grid>
-        <Grid size={{xs:10,sm:8,md:4}}>
+        <Grid size={{ xs: 0, sm: 0, md: 2 }}></Grid>
+        <Grid size={{ xs: 10, sm: 8, md: 4 }}>
           <TextField
             fullWidth={true}
             label="Goal Outcome"
@@ -116,31 +162,21 @@ const AssignGoals = ({
           />
         </Grid>
 
-        <Grid size={{xs:10,sm:8,md:4}}>
-          {/* <TextField
-            fullWidth={true}
-            label="Completion Date"
-            type="date"
-            variant="outlined"
-            value={formData.completionDate}
-            onChange={(event) => {
-              setFormData({ ...formData, completionDate: event.target.value });
-            }}
-            error={error.completionDate == "" ? false : true}
-            helperText={error.completionDate}
-          /> */}
-           <LocalizationProvider dateAdapter={AdapterDayjs} >
-             <DatePicker
-             sx={{width:"100%"}}
-             value={formData.completionDate}
-             onChange={(newValue) => {
-                 setFormData({...formData, completionDate: newValue });
-             }}
-             label="Completion Date" />
-             </LocalizationProvider>
+        <Grid size={{ xs: 10, sm: 8, md: 4 }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              sx={{ width: "100%" }}
+              defaultValue={null}
+              value={formData.completionDate}
+              onChange={(newValue) => {
+                setFormData({ ...formData, completionDate: newValue });
+              }}
+              label="Completion Date"
+            />
+          </LocalizationProvider>
         </Grid>
-        <Grid size={{xs:0,sm:0,md:2}}></Grid>
-        <Grid size={{xs:10,sm:8,md:4}}>
+        <Grid size={{ xs: 0, sm: 0, md: 2 }}></Grid>
+        <Grid size={{ xs: 10, sm: 8, md: 4 }}>
           <div
             style={{ display: "flex", height: "100%", alignItems: "center" }}
           >
@@ -153,7 +189,11 @@ const AssignGoals = ({
                 variant="plain"
               />
             ) : (
-              <Button variant="contained" onClick={handleSubmit} sx={{backgroundColor:"#6a9ab0"}} >
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                sx={{ backgroundColor: "#6a9ab0" }}
+              >
                 Save
               </Button>
             )}

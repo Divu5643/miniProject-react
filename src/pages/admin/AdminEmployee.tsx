@@ -151,11 +151,11 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
                   </TableCell>
                   <TableCell align="right">{user.email}</TableCell>
                   <TableCell align="right">
-                    {user.role.charAt(0).toUpperCase()}
-                    {user.role.slice(1)}
+                    {user && user.role && user.role.charAt(0).toUpperCase()}
+                    {user && user.role && user.role.slice(1)}
                   </TableCell>
                   <TableCell align="right">
-                    {user.department.toUpperCase()}
+                    {user && user.department &&user.department.toUpperCase()}
                   </TableCell>
                   <TableCell align="right">
                     <Button variant="text" onClick={()=>{navigate("/admin/EditEmployee", { state: user });}}  >Edit </Button> |

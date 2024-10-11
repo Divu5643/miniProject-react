@@ -8,6 +8,7 @@ import EditEmployee from "../pages/admin/EditEmployee";
 import ReviewCycle from "../pages/admin/ReviewCycle";
 import AdminGoals from "../pages/admin/AdminGoals";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import { CheckAuth } from "../utils/Authentication";
 
 const adminRoutes = () => {
   return (
@@ -15,41 +16,44 @@ const adminRoutes = () => {
       <Route
         path="/admin"
         element={
-          <div>
-            <SideBar navItemList={AdminList}  ChildComponent={AdminDashboard} />
-            
-          </div>
+          <SideBar navItemList={AdminList} ChildComponent={AdminDashboard} />
         }
       />
       <Route
         path="/admin/employees"
         element={
+          <SideBar navItemList={AdminList} ChildComponent={AdminEmployee} />
+        }
+      />
+      <Route
+        path="/admin/goal"
+        element={
+          <SideBar navItemList={AdminList} ChildComponent={AdminGoals} />
+        }
+      />
+      <Route
+        path="/admin/performance"
+        element={
           <div>
-            <SideBar navItemList={AdminList} ChildComponent={AdminEmployee} />
-            
+            <SideBar navItemList={AdminList} ChildComponent={ReviewCycle} />
           </div>
         }
       />
-      <Route path="/admin/goal" element={<div>
-        <SideBar navItemList={AdminList} ChildComponent={AdminGoals} />
-        </div>} />
-      <Route
-        path="/admin/performance"
-        element={<div>
-            <SideBar navItemList={AdminList} ChildComponent={ReviewCycle} />
-             </div>}
-      />
       <Route
         path="/admin/addEmployee"
-        element={<div>
+        element={
+          <div>
             <SideBar navItemList={AdminList} ChildComponent={AddEmployee} />
-             </div>}
+          </div>
+        }
       />
       <Route
         path="/admin/EditEmployee"
-        element={<div>
+        element={
+          <div>
             <SideBar navItemList={AdminList} ChildComponent={EditEmployee} />
-             </div>}
+          </div>
+        }
       />
     </React.Fragment>
   );

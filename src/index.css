@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 :root{
   --backgroundColor: #384B70;
   --textColor:#FCFAEE;
@@ -7,7 +7,7 @@
   --lightSecondaryColor:#6A9AB0;
 }
 #root{
-  font-family: 'Popins', sans-serif;
+  font-family: 'Roboto', sans-serif;
   
 }
 /* SideBar */
@@ -50,10 +50,14 @@
   margin: 1.5rem auto;
   display: flex;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 800;
   gap: 2rem;
   align-items: center;
   cursor: pointer;
+}
+.sidebar-logout-container{
+  position: absolute;
+  bottom: 2rem;
 }
 /* common for all Pages */
 .page-header{
@@ -61,13 +65,59 @@
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .page-title{
-  font-size: 1.5rem;
-  font-family: 'Poppins', sans;
+  font-size: 1.7rem;
+  font-family: 'Roboto', sans;
   font-weight: 700;
   margin: auto;
   color: var(--lightSecondaryColor);
 }
 .page-content{
   margin-top: 1.5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
+}
+.table-data{
+  max-width: 200px!important;
+}
+.signUpContainer{
+  width: 50%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  
+}
+.form-container{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.title h2, .title h5{
+  margin: 1rem;
+  font-family: 'Poppins', sans-serif!important;
+  font-weight: 500;
+}
+.very-large-heading{
+  font-size: 6rem;
+  margin: 1rem;
+  font-family: 'Poppins', sans-serif!important;
+  text-align: center;
+}
+.error-subtitle{
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Poppins', sans-serif!important;
+}
+.error-body{
+  margin: 1rem;
+  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif!important;
+}
+.error-btn{
+  width: 30%;
+  margin: auto;
+
+}
+.table-header-data{
+  font-size: 1.2rem;
 }

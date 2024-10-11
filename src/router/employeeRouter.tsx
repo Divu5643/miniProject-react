@@ -6,6 +6,7 @@ import EmployeeProfile from "../pages/employee/EmployeeProfile";
 import EmployeeGoals from "../pages/employee/EmployeeGoals";
 import EmployeeSelfAssesment from "../pages/employee/EmployeeSelfAssesment";
 import ProfileSetting from "../pages/employee/ProfileSetting";
+import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 
 const employeeRoutes = () => {
   return (
@@ -14,7 +15,7 @@ const employeeRoutes = () => {
         path="/employee"
         element={
           <div>
-            <SideBar navItemList={EmployeeList}  ChildComponent={()=>{return(<>Dashboard Employee - Charts And stuff for all employee</>)}} />
+            <SideBar navItemList={EmployeeList}  ChildComponent={EmployeeDashboard} />
             
           </div>
         }

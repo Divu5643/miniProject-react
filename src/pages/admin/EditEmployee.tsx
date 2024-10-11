@@ -4,11 +4,13 @@ import React from 'react'
 import { useLocation, useNavigate } from "react-router-dom";
 import employeeSchema from '../../validation/AddEmployeeValidation';
 import Axios from '../../axios/config';
+import CircularProgress from '@mui/joy/CircularProgress';
 import { ValidationError } from 'yup';
 const EditEmployee = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [userUpdated,setUserUpdated] = React.useState(false);
+    const [isRequestLoading,setIsRequestLoading] = React.useState<Boolean>(false);
   const data = location.state;
   const [formData, setFormData] = React.useState(data);
   const [error,setError] = React.useState({
@@ -19,6 +21,7 @@ const EditEmployee = () => {
     department: "",
   });
   const FormSubmit = async()=>{
+    setIsRequestLoading(true);
     await employeeSchema.validate(formData,{abortEarly:false})
     .then((response)=>{
       setError({name: "",
@@ -28,9 +31,10 @@ const EditEmployee = () => {
         department: "",})
       Axios.post("/updateUser",formData).then((response)=>{
         setUserUpdated(true);
+        setIsRequestLoading(false);
         setTimeout(()=>navigate("/admin/employees"),1000);
         
-      });
+      }).catch((error)=>setIsRequestLoading(false));
     })
     .catch((err:ValidationError) => {
       console.log(err);
@@ -43,7 +47,7 @@ const EditEmployee = () => {
       errArr.map((err) => {
           console.log(typeof(err))
         errorObj[err?.path as string] = err?.message;
-        console.log("Error Object",errorObj)
+        setIsRequestLoading(false);
           setError(errorObj);
       });
     });
@@ -134,8 +138,11 @@ const EditEmployee = () => {
             </MenuItem>
             </TextField>
           </Grid>
-          <Grid size={{xs:10,sm:8,md:5}} spacing={2}>
-            <Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained" type="submit"> Submit</Button>
+          <Grid size={{xs:10,sm:8,md:5}} spacing={6} sx={{display:"flex",alignItems:"center",gap:"20px"}}>
+            {isRequestLoading?<CircularProgress variant="soft" />:<Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained"> Save</Button>}
+    
+
+
             <Button variant="contained" onClick={()=>navigate("/admin/employees")} > Cancel</Button>
           </Grid>
         </Grid>

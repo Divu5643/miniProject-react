@@ -48,4 +48,26 @@ const EmployeeList = [
     navLink: "/employee/profile",
   },
 ];
-export { AdminList,EmployeeList };
+const ReviewerList = [
+  {
+    navName: "Dashboard",
+    navIcon: <Dashboard />,
+    navLink: "/manager",
+  },
+  {
+    navName: "Employees",
+    navIcon: <BadgeIcon />,
+    navLink: "/manager/employees",
+  },
+  {
+    navName: "Goals",
+    navIcon: <FlagIcon />,
+    navLink: "/manager/goal",
+  },
+  {
+    navName: "Reviews",
+    navIcon: <AccountCircleIcon />,
+    navLink: "/manager/performance",
+  },
+];
+export { AdminList,EmployeeList,ReviewerList };

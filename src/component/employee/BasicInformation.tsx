@@ -1,8 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import Grid2 from '@mui/material/Grid2';
 import React from 'react'
+import IProfile from '../../utils/Interfaces/IProfile';
 
-const BasicInformation = () => {
+const BasicInformation = ({profileInfo}:{profileInfo:IProfile}) => {
   return (
     <Box sx={{ padding: 2 }}>
       <Grid2 container spacing={2} alignItems="center">
@@ -21,14 +22,14 @@ const BasicInformation = () => {
             <Box sx={{ padding: 2 }}>
               
               <Typography variant="h6">Name</Typography>
-              <Typography variant="body1">John Doe</Typography>
+              <Typography variant="body1">{profileInfo.name}</Typography>
             </Box>
           </Grid2>
           <Grid2 size={6}>
             <Box sx={{  padding: 2 }}>
               
               <Typography variant="h6">Designation</Typography>
-              <Typography variant="body1">Software Engineer</Typography>
+              <Typography variant="body1">{profileInfo.designation}</Typography>
             </Box>
           </Grid2>
 
@@ -37,28 +38,28 @@ const BasicInformation = () => {
             <Box sx={{  padding: 2 }}>
               
               <Typography variant="h6">Department</Typography>
-              <Typography variant="body1">Microsoft</Typography>
+              <Typography variant="body1">{profileInfo.department}</Typography>
             </Box>
           </Grid2>
           <Grid2 size={6}>
             <Box sx={{  padding: 2 }}>
               
               <Typography variant="h6">Reporting Manager</Typography>
-              <Typography variant="body1">Bikash Pradhan</Typography>
+              <Typography variant="body1">{profileInfo.reportingManager==""?"Not Assigned Yet":profileInfo.reportingManager}</Typography>
             </Box>
           </Grid2>
           <Grid2 size={6}>
             <Box sx={{  padding: 2 }}>
               
               <Typography variant="h6">Date of Birth</Typography>
-              <Typography variant="body1">01 Jan 1990</Typography>
+              <Typography variant="body1">{profileInfo.dateOfBirth}</Typography>
             </Box>
           </Grid2>
           <Grid2 size={6}>
             <Box sx={{  padding: 2 }}>
               
               <Typography variant="h6">Gender</Typography>
-              <Typography variant="body1">Male</Typography>
+              <Typography variant="body1">{profileInfo.gender}</Typography>
             </Box>
           </Grid2>
         </Grid2>
