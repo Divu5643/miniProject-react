@@ -1,5 +1,5 @@
-import { Button, IconButton, InputAdornment, TextField } from "@mui/material";
-import React from "react";
+import { Button, CircularProgress, IconButton, InputAdornment, TextField } from "@mui/material";
+import React, { useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import AlternateEmailRoundedIcon from "@mui/icons-material/AlternateEmailRounded";
 import { Password, Visibility, VisibilityOff } from "@mui/icons-material";
@@ -9,10 +9,16 @@ import Axios from "../../axios/config";
 import CustomAlert from "../../component/common/Alert";
 import ILoginData from "../../utils/Interfaces/ILogin";
 import { setEmployeeList, setLoggedInUser, setUserList } from "../../redux/slice/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../redux/store/store";
+import { getRandomColor } from "../../utils/StringFunction";
 
 const LoginPage = () => {
+  const authenticated = useSelector((state:RootState) => state.isAuthenticated);
+  const userRole = useSelector((state:RootState) => state.loginData.role);
+  const [isRequestLoading, setIsRequestLoading] = React.useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
@@ -44,24 +50,28 @@ const LoginPage = () => {
   };
 
   const handleSubmit = () => {
+    setIsRequestLoading(true);
     LoginSchema.validate(formData, { abortEarly: false })
       .then((response) => {
         setError({ email: "", password: "" });
-        Axios.post("/Loginuser", formData)
+        Axios.post("/user/Loginuser", formData)
           .then((result) => {
-            console.log("response: ", result.data);
+          
             const user: ILoginData = {
               username: result.data.name,
               role: result.data.role,
               email: result.data.email,
               userId: result.data.userid,
             };
-            dispatch(setLoggedInUser(user));
+            const AvatarColor = getRandomColor();
+            setIsRequestLoading(false);
+            dispatch(setLoggedInUser({user,AvatarColor}));
             LoadData(user.role, user.userId);
             navigate(`/${user.role}`);
           })
           .catch((error) => {
             console.log("error:", error);
+            setIsRequestLoading(false); 
             if (error.code == "ERR_NETWORK") {
               setAlert({ open: true, message: error.message });
             } else {
@@ -83,12 +93,13 @@ const LoginPage = () => {
           console.log(typeof err);
           errorObj[err?.path as string] = err?.message;
           setError(errorObj);
+          setIsRequestLoading(false);
         });
       });
   };
   const LoadData = (role: string, userId: Number) => {
     if (role == "admin") {
-      Axios.get("/getAllUsers").then((response) => {
+      Axios.get("/user/getAllUsers").then((response) => {
         dispatch(setUserList(response.data));
       });
     } else if (role == "manager") {
@@ -99,7 +110,12 @@ const LoginPage = () => {
       );
     }
   };
+useEffect(()=>{
+if(authenticated){
 
+  navigate(`/${userRole}`);
+}
+},[])
   return (
     <>
       <div className="signUpContainer">
@@ -177,11 +193,13 @@ const LoginPage = () => {
               <Button
                 variant="contained"
                 fullWidth
+                disabled={isRequestLoading}
                 onClick={() => {
                   handleSubmit();
                 }}
               >
-                Sign In
+                {isRequestLoading ? <CircularProgress /> : "Sign In"}
+                
               </Button>
             </Grid>
           </Grid>

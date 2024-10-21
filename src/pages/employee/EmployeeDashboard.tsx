@@ -6,6 +6,8 @@ import { RootState } from '../../redux/store/store';
 import { IPerfomanceData } from '../../utils/Interfaces/IAssesnment';
 import EmployeeReviews from './EmployeeReviewHistory';
 import GoalProgress from './GoalProgress';
+import ProfileNavigation from '../../component/common/ProfileNavigation';
+import ContentHeader from '../../component/common/ContentHeader';
 
 const EmployeeDashboard = () => {
 
@@ -17,9 +19,7 @@ const EmployeeDashboard = () => {
   return (
     
    <>
-    <div className="page-header">
-        <h4 className="page-title">Dashboard</h4>
-      </div>
+ < ContentHeader title='Dashboard' />
       <div className="page-content">
         <Paper elevation={6} sx={{padding:"1rem"}} >
         <Tabs

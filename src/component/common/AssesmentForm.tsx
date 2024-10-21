@@ -11,6 +11,7 @@ import { RootState } from "../../redux/store/store";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CommonSnackbar from "./CommonSnackbar";
 
 
 
@@ -61,6 +62,9 @@ const AssesmentForm = () => {
                   deliveryTime:"",
                   remark:""});
                 setIsRequestLoading(false);
+            }).catch(error=>{
+              setIsRequestLoading(false);
+              openSnackBar(error.message);
             })
 
 
@@ -96,9 +100,18 @@ const AssesmentForm = () => {
             value={formData.technicalSkill} 
             onChange={(event)=>{setFormData({...formData, technicalSkill:event.target.value})}}
             required
+            
             error={error.technicalSkill ==""? false:true}
             helperText={error.technicalSkill} 
-            
+            slotProps={{
+              htmlInput:{
+                min:0,
+                max:30
+              }
+            }
+              
+            }
+          
             />
           </Grid>
           <Grid size={{ xs: 8, md: 6, lg: 6 }}>
@@ -108,6 +121,14 @@ const AssesmentForm = () => {
              required
              error={error.softSkill ==""? false:true}
             helperText={error.softSkill} 
+            slotProps={{
+              htmlInput:{
+                min:0,
+                max:30
+              }
+            }
+              
+            }
             />
           </Grid>
           <Grid size={{ xs: 8, md: 6, lg: 6 }}>
@@ -117,6 +138,14 @@ const AssesmentForm = () => {
              onChange={(event)=>{setFormData({...formData, teamworkSkill:event.target.value})}}
              error={error.teamworkSkill ==""? false:true}
             helperText={error.teamworkSkill} 
+            slotProps={{
+              htmlInput:{
+                min:0,
+                max:30
+              }
+            }
+              
+            }
             />
           </Grid>
           <Grid size={{ xs: 8, md: 6, lg: 6 }}>
@@ -126,6 +155,14 @@ const AssesmentForm = () => {
              onChange={(event)=>{setFormData({...formData, deliveryTime:event.target.value})}}
              error={error.deliveryTime ==""? false:true}
             helperText={error.deliveryTime } 
+            slotProps={{
+              htmlInput:{
+                min:0,
+                max:30
+              }
+            }
+              
+            }
             />
           </Grid>
           <Grid size={{ xs: 8, md: 12, lg: 12 }}>
@@ -146,7 +183,7 @@ const AssesmentForm = () => {
           </Grid>
         </Grid>
       </Paper>{" "}
-      <Snackbar
+      {/* <Snackbar
         anchorOrigin={{ horizontal:'left',vertical: 'bottom' }}
         sx={{maxWidth: "250px"}}
         open={open.open}
@@ -161,7 +198,8 @@ const AssesmentForm = () => {
         >
           <CloseRoundedIcon fontSize="small" />
         </IconButton>}
-      />
+      /> */}
+      <CommonSnackbar open={open} closeSnackbar={closeSnackbar} />
     </>
   );
 };

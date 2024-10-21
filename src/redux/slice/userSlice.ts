@@ -10,12 +10,14 @@ export interface ProjectState {
   employeeList:IuserByManager[];
   isAuthenticated: boolean;
   loginData: ILoginData;
+  AvatarColor:string;
 }
 
 const initialState: ProjectState = {
   userList: [],
   isAuthenticated: false,
   employeeList:[],
+  AvatarColor:"black",
   loginData: { username: "", role: "", email: "", userId: 0 },
 };
 
@@ -26,13 +28,14 @@ export const userSlice = createSlice({
     setUserList: (state, action: PayloadAction<Iuser[]>) => {
       state.userList = [...action.payload];
       return state;
-    }, setEmployeeList: (state, action: PayloadAction<IuserByManager[]>) => {
+    },
+     setEmployeeList: (state, action: PayloadAction<IuserByManager[]>) => {
       state.employeeList = [...action.payload];
       return state;
     },
-    
-    setLoggedInUser: (state, action: PayloadAction<ILoginData>) => {
-      state.loginData = action.payload;
+    setLoggedInUser: (state, action: PayloadAction<{user:ILoginData , AvatarColor:string}>) => {
+      state.loginData = action.payload.user;
+      state.AvatarColor = action.payload.AvatarColor;
       state.isAuthenticated = true;
       return state;
     },

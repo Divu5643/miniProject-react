@@ -8,7 +8,10 @@ import EditEmployee from "../pages/admin/EditEmployee";
 import ReviewCycle from "../pages/admin/ReviewCycle";
 import AdminGoals from "../pages/admin/AdminGoals";
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import { CheckAuth } from "../utils/Authentication";
+
+import EmployeeProfileAll from "../pages/EmployeeProfileAll";
+import ProfileSetting from "../pages/employee/ProfileSetting";
+import AdminProfile from "../pages/admin/AdminProfile";
 
 const adminRoutes = () => {
   return (
@@ -52,6 +55,30 @@ const adminRoutes = () => {
         element={
           <div>
             <SideBar navItemList={AdminList} ChildComponent={EditEmployee} />
+          </div>
+        }
+      />
+       <Route
+        path="/admin/profile/:employeeId"
+        element={
+          <div>
+            <SideBar navItemList={AdminList} ChildComponent={EmployeeProfileAll} />
+          </div>
+        }
+      />
+      <Route
+        path="/admin/selfProfile"
+        element={
+          <div>
+            <SideBar navItemList={AdminList} ChildComponent={AdminProfile} />
+          </div>
+        }
+      />
+      <Route
+        path="/admin/profileSettings"
+        element={
+          <div>
+            <SideBar navItemList={AdminList} ChildComponent={ProfileSetting} />
           </div>
         }
       />

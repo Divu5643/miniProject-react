@@ -1,134 +1,252 @@
-import React from 'react'
-import Grid from '@mui/material/Grid2';
-import { Button, MenuItem, Paper, TextField } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
-import IProfile from '../../utils/Interfaces/IProfile';
-import employeeProfileSchema from '../../validation/ProfileValidation';
-import { ValidationError } from 'yup';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store/store';
-import Axios from '../../axios/config';
+import React, { useEffect } from "react";
+import Grid from "@mui/material/Grid2";
+import {
+  Button,
+  CircularProgress,
+  MenuItem,
+  Paper,
+  TextField,
+} from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+import IProfile from "../../utils/Interfaces/IProfile";
+import employeeProfileSchema from "../../validation/ProfileValidation";
+import { ValidationError } from "yup";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
+import Axios from "../../axios/config";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import CommonSnackbar from "../../component/common/CommonSnackbar";
+import ContentHeader from "../../component/common/ContentHeader";
 const ProfileSetting = () => {
-const {state} = useLocation();
-const { profileInfo} = state;
-const navigate = useNavigate();
-const userId = useSelector((state:RootState)=>state.loginData.userId);
-const [formData,setFormData] = React.useState<IProfile>(profileInfo);
-const [error,setError] = React.useState({
-    personalEmail:"",
-    name: "",
-    dateOfBirth:"",
-    gender:"",
-    phone:""
-});
+  const [isRequestLoading, setIsRequestLoading] = React.useState(false);
 
-const formSubmit= ()=>{
-employeeProfileSchema.validate(formData,{abortEarly:false})
-.then((response)=>{
-    setError({personalEmail:"",
-        name: "",
-        dateOfBirth:"",
-        gender:"",
-        phone:""});
- // axios call to update employee profile
-Axios.post("/profile/editEmployeeDetails",formData).then((result)=>{
-    console.log(result.data);
-}).catch((error)=>{ console.log("error",error)})
+
+
+  const navigate = useNavigate();
+  const userId = useSelector((state: RootState) => state.loginData.userId);
+  const userRole = useSelector((state: RootState) => state.loginData.role);
+  const [open,setOpen] = React.useState({open: false, message:""});
+  const closeSnackbar = ()=>setOpen({open: false, message:""});
+  const openSnackBar = (message: string) => setOpen({open: true, message: message});
     
+  // const [formData, setFormData] = React.useState<IProfile>({ ...profileInfo, 
+  //   dateOfBirth: profileInfo.dateOfBirth == null? null : dayjs(profileInfo.dateOfBirth.$d)});
+      
+  const [formData, setFormData] = React.useState<IProfile>({userId:userId,
+    name:"",
+    designation:"",
+    department:"",
+    reportingManager:"",
+    dateOfBirth:null,
+    gender:"",
+    email:"",
+    phone:"",
+    personalEmail:""});
 
-
-}).catch((err:ValidationError) => {
-    console.log(err);
-    let errArr = err?.inner || [];
-    let errorObj: any= {
-        personalEmail:"",
-        name: "",
-        dateOfBirth:"",
+  useEffect(()=>{
+    Axios.post("/profile/getEmployeeDetails",{userID:userId})
+    .then((response)=>{
+        console.log("response:",response.data)
+        setFormData({...response.data,
+          dateOfBirth: response.data.dateOfBirth ==null ?null :dayjs(response.data.dateOfBirth)});
+    }).catch((error)=>{
+      setFormData({
+        userId:userId,
+        name:"",
+        designation:"",
+        department:"",
+        reportingManager:"",
+        dateOfBirth:null,
         gender:"",
-        phone:"",};
-
-    errArr.map((err) => {
-        console.log(typeof(err))
-      errorObj[err?.path as string] = err?.message;
-      console.log("Error Object",errorObj)
-        setError(errorObj);
+        email:"",
+        phone:"",
+        personalEmail:""
+      });
     });
+  },[])
+  
+  const [error, setError] = React.useState({
+    personalEmail: "",
+    name: "",
+    dateOfBirth: "",
+    gender: "",
+    phone: "",
   });
-}
+
+  const formSubmit = () => {
+ 
+    setIsRequestLoading(true);
+
+    employeeProfileSchema
+      .validate(formData, { abortEarly: false })
+      .then((response) => {
+        setError({
+          personalEmail: "",
+          name: "",
+          dateOfBirth: "",
+          gender: "",
+          phone: "",
+        });
+        // axios call to update employee profile
+        Axios.post("/profile/editEmployeeDetails", 
+            {...formData,
+                dateOfBirth: formData.dateOfBirth?.format("YYYY-MM-DD")})
+          .then((result) => {
+                setFormData({
+
+                })
+                openSnackBar("Profile updated successfully");
+            setIsRequestLoading(false);
+            navigate(`/${userRole}/selfProfile`, { replace: true });
+          })
+          .catch((error) => {
+            console.log("error", error);
+            setIsRequestLoading(false);
+          });
+      })
+      .catch((err: ValidationError) => {
+        console.log(err);
+        let errArr = err?.inner || [];
+        let errorObj: any = {
+          personalEmail: "",
+          name: "",
+          dateOfBirth: "",
+          gender: "",
+          phone: "",
+        };
+
+        errArr.map((err) => {
+          console.log(typeof err);
+          errorObj[err?.path as string] = err?.message;
+          console.log("Error Object", errorObj);
+          setError(errorObj);
+          setIsRequestLoading(false);
+        });
+      });
+  };
 
   return (
     <>
-    <div className="page-header">
-        <h1 className="page-title">Employee Details</h1>
-    </div>
-    <div className="page-content">
-
-    <Paper elevation={6} sx={{display:"flex",justifyContent:"center", padding:"1.5rem"}}>
-        <Grid container spacing={3} size={8}  >
-        <Grid size={{xs:7,md:6}}>
-            <TextField 
-            fullWidth
-            label="Personal Email"
-            value={formData.personalEmail}
-            onChange={(event)=>{setFormData({...formData,personalEmail:event.target.value})}}
-            error={error.personalEmail==""?false:true}
-            helperText={error.personalEmail}
-            />
-        </Grid>
-        {/* <Grid size={{xs:7,md:6}}>
-             <TextField fullWidth label="Password" type='password'
-            value={formData.password}
-            onChange={(event)=>{setFormData({...formData,email:event.target.value})}}
-            /> 
-        </Grid> */}
-        <Grid size={{xs:7,md:6}}>
-            <TextField fullWidth label="Name" 
-            value={formData.name}
-            onChange={(event)=>{setFormData({...formData, name:event.target.value})}}
-            error={error.name==""?false:true}
-            helperText={error.name}
-            />
-        </Grid>
-        <Grid size={{xs:7,md:6}}>
-            <TextField  fullWidth label="Date of Birth" 
-            value={formData.dateOfBirth}
-            onChange={(event)=>{setFormData({...formData,dateOfBirth:event.target.value})}}
-            error={error.dateOfBirth==""?false:true}
+      
+      <ContentHeader title="Employee Details" />
+      <div className="page-content">
+        <Paper
+          elevation={6}
+          className="paper-inside-content"
+          sx={{ display: "flex", justifyContent: "center", padding: "1.5rem" }}
+        >
+          <Grid container spacing={3} size={{ xs: 12, sm: 10, md: 8 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Personal Email"
+                value={formData.personalEmail}
+                onChange={(event) => {
+                  setFormData({
+                    ...formData,
+                    personalEmail: event.target.value,
+                  });
+                }}
+                error={error.personalEmail == "" ? false : true}
+                helperText={error.personalEmail}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Name"
+                value={formData.name}
+                onChange={(event) => {
+                  setFormData({ ...formData, name: event.target.value });
+                }}
+                error={error.name == "" ? false : true}
+                helperText={error.name}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              sx={{ width: "100%" }}
+              defaultValue={null}
+              value={formData.dateOfBirth}
+              maxDate={dayjs(new Date())}
+              onChange={(newValue) => {
+                setFormData({ ...formData, dateOfBirth: newValue });
+              }}
+              slots={{
+                textField:(params)=><TextField 
+                {...params}
+                error={error.dateOfBirth == "" ? false : true}
             helperText={error.dateOfBirth}
+            InputProps={params.InputProps}
+            inputProps={params.inputProps}
+                />
+              }}
+              label="Completion Date"
             />
-        </Grid>
-        <Grid size={{xs:7,md:6}}>
-            <TextField fullWidth label="Gender" 
-            value={formData.gender}
-            onChange={(event)=>{setFormData({...formData,gender:event.target.value})}}
-            error={error.gender==""?false:true}
-            helperText={error.gender}
-            select
-            >
+          </LocalizationProvider>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Gender"
+                value={formData.gender}
+                onChange={(event) => {
+                  setFormData({ ...formData, gender: event.target.value });
+                }}
+                error={error.gender == "" ? false : true}
+                helperText={error.gender}
+                select
+              >
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
-
-                 </TextField>
-
-        </Grid>
-        <Grid size={{xs:7,md:6}}>
-            <TextField fullWidth label="Phone"
-            value={formData.phone}
-            onChange={(event)=>{setFormData({...formData,phone:event.target.value})}}
-            error={error.phone==""?false:true}
-            helperText={error.phone}
-            />
-        </Grid>
-        <Grid size={{xs:7,md:6}} sx={{display:"flex",gap:"30px",alignItems:"center"}} >
-            <Button variant='contained' onClick={()=>formSubmit()} >Submit</Button>
-            <Button variant='contained' color='error' onClick={()=>{navigate("/employee/profile")}}  >Cancel</Button>
-        </Grid>
-        </Grid>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Phone"
+                value={formData.phone}
+                onChange={(event) => {
+                  setFormData({ ...formData, phone: event.target.value });
+                }}
+                error={error.phone == "" ? false : true}
+                helperText={error.phone}
+              />
+            </Grid>
+            <Grid
+              size={{ xs: 12, md: 6 }}
+              sx={{ display: "flex", gap: "30px", alignItems: "center" }}
+            >
+              {isRequestLoading ? (
+                <CircularProgress
+                  variant="indeterminate"
+                  sx={{ width: "56px" }}
+                />
+              ) : (
+                <Button variant="contained" onClick={() => formSubmit()}>
+                  Submit
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => {
+                  navigate(`/${userRole}/Selfprofile`);
+                }}
+              >
+                Cancel
+              </Button>
+            </Grid>
+          </Grid>
         </Paper>
-            </div>
-    
+      </div>
+      <CommonSnackbar open={open.open} closeSnackbar={closeSnackbar} />
     </>
-  )
-}
+  );
+};
 
-export default ProfileSetting
+export default ProfileSetting;

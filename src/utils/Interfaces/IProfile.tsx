@@ -1,10 +1,12 @@
+import { Dayjs } from "dayjs";
+
 interface IProfile{
     userId?:Number,
     name?:string,
     designation?:string,
     department?:string,
     reportingManager?:string,
-    dateOfBirth?:string,
+    dateOfBirth?: Dayjs |null,
     gender?:string,
     email?:string,
     phone?:string,

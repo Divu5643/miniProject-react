@@ -1,9 +1,11 @@
-import { Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material'
+import { Button, Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material'
 import React, { useEffect } from 'react'
 import Axios from '../../axios/config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
 import { IPerfomanceData } from '../../utils/Interfaces/IAssesnment';
+import { printDate } from '../../utils/StringFunction';
+import NoData from '../../component/common/NoData';
 
 const EmployeeReviews = ()=>{
     const userId =  useSelector((state:RootState)=>state.loginData.userId);
@@ -31,6 +33,8 @@ const EmployeeReviews = ()=>{
     },[])
     return (
       <div style={{marginTop:"10px"}} >
+        {performanceList.length==0 ? <NoData/> : 
+        
         <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -41,6 +45,8 @@ const EmployeeReviews = ()=>{
               <TableCell   className="table-header-data" >Teamwork</TableCell>
               <TableCell   className="table-header-data" >Delivery Time</TableCell>
               <TableCell   className="table-header-data" >Remark</TableCell>
+             
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -48,18 +54,21 @@ const EmployeeReviews = ()=>{
             const reviewDate =  new Date(data.reviewDate.toString());
             return (
               <TableRow key={data.performanceId}>
-                <TableCell align="left" className="table-cell" >{reviewDate.toLocaleDateString()}</TableCell>
+                <TableCell align="left" className="table-cell" >{printDate(reviewDate)}</TableCell>
                 <TableCell align="left" className="table-cell" >{`${data.technicalSkill}`}</TableCell>
                 <TableCell align="left" className="table-cell" >{`${data.softSkill}`}</TableCell>
                 <TableCell align="left" className="table-cell" >{`${data.teamworkSkill}`}</TableCell>
                 <TableCell align="left" className="table-cell" >{`${data.deliveryTime}`}</TableCell>
                 <TableCell align="left" className="table-cell" >{data.remark}</TableCell>
+               
+
               </TableRow>
             )
           })}
           </TableBody>
           </Table>
           </TableContainer >    
+        }
           </div>
     )
   }

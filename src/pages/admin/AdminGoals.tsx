@@ -13,7 +13,13 @@ import Axios from "../../axios/config";
 import IshowGoal from "../../utils/Interfaces/IGoals";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AssignGoals from "../../component/admin/AssignGoals";
+import GoalSearch from "../../component/common/GoalSearch";
+import CommonSnackbar from "../../component/common/CommonSnackbar";
+import ContentHeader from "../../component/common/ContentHeader";
 let permanaentGoalList: IshowGoal[] = [];
+const setPermanaentGoalList =(list:IshowGoal[])=>{
+  permanaentGoalList = list;
+}
 const AdminGoals = () => {
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
@@ -66,18 +72,11 @@ const AdminGoals = () => {
     } else {
       setGoalList(permanaentGoalList);
     }
-  }, [filterValue, goalList]);
+  }, [filterValue]);
 
   return (
     <>
-      <div className="page-header">
-        <div
-          className="page-title"
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <span>Goals</span>
-        </div>
-      </div>
+            < ContentHeader title='Goals' />
       <div className="page-content" style={{margin:0}} >
         <div className="tabs-container">
           <Tabs
@@ -88,7 +87,10 @@ const AdminGoals = () => {
             <Tab value="all" label="All Goals" />
             <Tab value="manager" label="Assign Goals" />
           </Tabs>
-          {tabValue == "all" && (
+          {tabValue == "all" && (<>
+            <div className="SearchContainer" >
+              <GoalSearch isGoal={true}  permanentList={permanaentGoalList}  setGoalList={setGoalList} />
+            </div>
             <div className="filter-container">
               <TextField
                 fullWidth={true}
@@ -98,13 +100,14 @@ const AdminGoals = () => {
                 onChange={(event) => {
                   setFilterValue(event.target.value);
                 }}
-              >
+                >
                 <MenuItem value="all">All</MenuItem>
                 <MenuItem value="pending">Pending</MenuItem>
                 <MenuItem value="progress">In-Progress</MenuItem>
-                <MenuItem value="complete">Completed</MenuItem>
+                <MenuItem value="complete">Complete</MenuItem>
               </TextField>
             </div>
+                </>
           )}
         </div>
         {tabValue == "all" ? (
@@ -112,31 +115,15 @@ const AdminGoals = () => {
             goalList={goalList}
             setGoalList={setGoalList}
             openSnackBar={openSnackBar}
+            permanaentGoalList={permanaentGoalList}
+
+            setPermanaentGoalList={setPermanaentGoalList}
           />
         ) : (
           <AssignGoals loadData={loadData} openSnackBar={openSnackBar} user="admin" />
         )}
       </div>
-      <Snackbar
-        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-        sx={{ maxWidth: "250px" }}
-        open={open.open}
-        autoHideDuration={4000}
-        onClose={closeSnackbar}
-        message={open.message}
-        action={
-          <>
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={closeSnackbar}
-            >
-              <CloseRoundedIcon fontSize="small" />
-            </IconButton>
-          </>
-        }
-      />
+      <CommonSnackbar  open={open.open} closeSnackbar={closeSnackbar} />
     </>
   );
 };

@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   MenuItem,
   Snackbar,
   TextField,
@@ -14,6 +15,7 @@ import Axios from "../../axios/config";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
+  const [isRequestLoading,setIsRequestLoading] =  React.useState(false);
   const[userSaved,setUserSaved] =  React.useState(false);
   const [formData, setFormData] = React.useState<Iuser>({
     userid: 0,
@@ -35,6 +37,7 @@ const AddEmployee = () => {
   });
 
   const FormSubmit = async()=>{
+    setIsRequestLoading(true);
     await employeeSchema.validate(formData,{abortEarly:false})
     .then((response)=>{
       setError({name: "",
@@ -43,11 +46,24 @@ const AddEmployee = () => {
         role: "",
         designation:"",
         department: "",})
-      Axios.post("/createUser",formData).then((response)=>{
+      Axios.post("/user/createUser",formData).then((response)=>{
         setUserSaved(true);
+        setIsRequestLoading(false);
+        setFormData({
+          userid: 0,
+          name: "",
+          email: "",
+          password: "",
+          role: "",
+          department: "",
+          designation:"",
+          isDeleted: false,
+        })
         setTimeout(()=>navigate("/admin/employees"),1000);
         
-      });
+      }).catch(error=>{
+        console.log(error);
+        setIsRequestLoading(false)})
     })
     .catch((err:ValidationError) => {
       console.log(err);
@@ -62,6 +78,7 @@ const AddEmployee = () => {
         errorObj[err?.path as string] = err?.message;
         console.log("Error Object",errorObj)
           setError(errorObj);
+          setIsRequestLoading(false);
       });
     });
   }
@@ -163,8 +180,10 @@ const AddEmployee = () => {
               onChange={(event)=>{setFormData({...formData,designation:event.target.value.toLowerCase()})}}
             />
           </Grid>
-          <Grid size={{xs:10,sm:8,md:5}} spacing={2}>
-            <Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained" type="submit"> Submit</Button>
+          <Grid size={{xs:10,sm:8,md:5}} spacing={2} sx={{display:"flex",alignItems:"center", gap:"20px"}} >
+            {isRequestLoading 
+            ?<CircularProgress />
+              :<Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained" type="submit">Submit</Button>}
             <Button variant="contained" onClick={()=>navigate("/admin/employees")} > Cancel</Button>
           </Grid>
         </Grid>

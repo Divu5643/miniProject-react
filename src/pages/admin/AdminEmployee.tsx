@@ -19,9 +19,15 @@ import "../../assets/css/AdminEmployee.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserList } from "../../redux/slice/userSlice";
 import { Iuser } from "../../utils/Interfaces/Iuser";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TableSkeletonLoading from "../../component/common/TableSkeletonLoading";
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { ToTitleCase } from "../../utils/StringFunction";
+import { CurrencyBitcoinOutlined } from "@mui/icons-material";
+import NoData from "../../component/common/NoData";
+import GoalSearch from "../../component/common/GoalSearch";
+import ContentHeader from "../../component/common/ContentHeader";
+
 const AdminEmployee = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,16 +40,13 @@ const AdminEmployee = () => {
     filterUserList(newValue);
   };
   useEffect(() => {
-    console.log("useEffectRun");
-    Axios.get("/getAllUsers")
+    Axios.get("/user/getAllUsers")
       .then((response) => {
         dispatch(setUserList(response.data));
         setFilterList(response.data);
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error.message);
-        console.log(currentUserList);
         setIsLoading(false);
         setFilterList(currentUserList);
       });
@@ -61,9 +64,7 @@ const AdminEmployee = () => {
 
   return (
     <>
-      <div className="page-header">
-        <h4 className="page-title">Users</h4>
-      </div>
+      < ContentHeader title='Users' />
       <div className="page-content">
         <div className="tabs">
           <Tabs
@@ -75,6 +76,10 @@ const AdminEmployee = () => {
             <Tab value="manager" label="Managers" />
             <Tab value="employee" label="Employees" />
           </Tabs>
+          <div className="search-container">
+            <GoalSearch isGoal={false} permanentList={currentUserList} setGoalList={setFilterList}   />
+          </div>
+
           <Button
             variant="outlined"
             startIcon={<PersonAddAltRoundedIcon />}
@@ -88,36 +93,49 @@ const AdminEmployee = () => {
         </div>
 
         <div className="table-container">
-        {isLoading ? <TableSkeletonLoading  column={4} /> :  filterList.length == 0 ? (
-            "No Users Found"
+          {isLoading ? (
+            <TableSkeletonLoading column={4} />
+          ) : filterList.length == 0 ? (
+            <NoData />
           ) : (
-            <EmployeeTable userList={filterList} />
-          )} 
-        
+            <EmployeeTable
+              userList={filterList}
+              changeUserList={setFilterList}
+            />
+          )}
         </div>
       </div>
     </>
   );
 };
 
-const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
+const EmployeeTable = ({
+  userList,
+  changeUserList,
+}: {
+  userList: Iuser[];
+  changeUserList: React.Dispatch<React.SetStateAction<Iuser[]>>;
+}) => {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState({open:false,message:""});
-  const closeSnackbar = () => setOpen({open:false,message:""});
-  const openSnackBar = (message:string) =>setOpen({open:true,message:message});
+  const [open, setOpen] = React.useState({ open: false, message: "" });
+  const closeSnackbar = () => setOpen({ open: false, message: "" });
+  const openSnackBar = (message: string) =>
+    setOpen({ open: true, message: message });
+
   const HandleDelete = (userID: Number) => {
-    console.log("user",userID)
-    Axios.post("/deleteUser", { 
-      userID:userID
-     })
+    Axios.post("/user/deleteUser", {
+      userID: userID,
+    })
       .then((response) => {
-        console.log(response);
+        let newList = userList.filter((user) => {
+          return user.userid !== userID;
+        });
+        changeUserList(newList);
+        openSnackBar("User deleted successfully");
       })
       .catch((error) => {
-        console.log(error);
-        openSnackBar("Cannot Delete : "+error.message);
+        openSnackBar("Cannot Delete : " + error.message);
       });
-      
   };
   return (
     <>
@@ -143,11 +161,14 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
           <TableBody>
             {userList.map((user) => {
               return (
-                <TableRow key={user.userid} >
+                <TableRow key={user.userid}>
                   <TableCell>
-                    {" "}
-                    {user.name.charAt(0).toUpperCase()}
-                    {user.name.slice(1)}
+                    <Link
+                      className="profile-Link"
+                      to={`/admin/profile/${user.userid}`}
+                    >
+                      {ToTitleCase(user.name)}
+                    </Link>
                   </TableCell>
                   <TableCell align="right">{user.email}</TableCell>
                   <TableCell align="right">
@@ -155,16 +176,24 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
                     {user && user.role && user.role.slice(1)}
                   </TableCell>
                   <TableCell align="right">
-                    {user && user.department &&user.department.toUpperCase()}
+                    {user && user.department && user.department.toUpperCase()}
                   </TableCell>
                   <TableCell align="right">
-                    <Button variant="text" onClick={()=>{navigate("/admin/EditEmployee", { state: user });}}  >Edit </Button> |
                     <Button
                       variant="text"
-                     
+                      onClick={() => {
+                        navigate("/admin/EditEmployee", { state: user });
+                      }}
+                    >
+                      Edit{" "}
+                    </Button>{" "}
+                    |
+                    <Button
+                      variant="text"
                       onClick={() => {
                         HandleDelete(user.userid);
                       }}
+                      color="error"
                     >
                       Delete
                     </Button>
@@ -176,20 +205,22 @@ const EmployeeTable = ({ userList }: { userList: Iuser[] }) => {
         </Table>
       </TableContainer>
       <Snackbar
-        anchorOrigin={{ horizontal:'left',vertical: 'bottom' }}
-        sx={{maxWidth: "250px"}}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        sx={{ maxWidth: "250px" }}
         open={open.open}
         autoHideDuration={3000}
         onClose={closeSnackbar}
         message={open.message}
-        action={ <IconButton
-          size="small"
-          aria-label="close"
-          color="inherit"
-          onClick={closeSnackbar}
-        >
-          <CloseRoundedIcon fontSize="small" />
-        </IconButton>}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={closeSnackbar}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        }
       />
     </>
   );

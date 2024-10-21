@@ -8,7 +8,8 @@ import Axios from '../../axios/config'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store/store'
 import IProfile from '../../utils/Interfaces/IProfile'
-
+import dayjs  from 'dayjs';
+import ContentHeader from '../../component/common/ContentHeader'
 const EmployeeProfile = () => {
   const navigate =  useNavigate();
   const userId =  useSelector((state:RootState)=>state.loginData.userId);
@@ -17,7 +18,8 @@ const EmployeeProfile = () => {
   useEffect(()=>{
     Axios.post("/profile/getEmployeeDetails",{userID:userId})
     .then((response)=>{
-      setUserData(response.data);
+      setUserData({...response.data,
+        dateOfBirth: response.data.dateOfBirth ==null ?null :dayjs(response.data.dateOfBirth)});
     }).catch((error)=>{
       setUserData({
         userId:userId,
@@ -25,7 +27,7 @@ const EmployeeProfile = () => {
         designation:"",
         department:"",
         reportingManager:"",
-        dateOfBirth:"",
+        dateOfBirth:null,
         gender:"",
         email:"",
         phone:"",
@@ -36,14 +38,12 @@ const EmployeeProfile = () => {
 
   return (
     <>
-    <div className="page-header">
-        <h4 className="page-title">Profile</h4>
-      </div>
+      < ContentHeader title='Profile' />
       <div className="page-content" >
         <Paper elevation={5} style={{width:"100%"}}  > 
         <Paper>
         <Paper variant='outlined' style={{padding:"1rem",display:"flex", justifyContent:"space-between"}}>
-        <h3>Basic Information</h3>
+        <h3 className='profile-subtitle' >Basic Information</h3>
         <Button onClick={()=>{navigate("/employee/profileSettings",{ state: { profileInfo:userData } })}}>Edit Profile</Button>
         </Paper>
         <Paper style={{display:"flex",gap:"75px",alignItems:"center",padding:"1rem"}}>
@@ -53,7 +53,7 @@ const EmployeeProfile = () => {
         </Paper>
         <Paper elevation={5}>
         <Paper variant='outlined' style={{padding:"1rem",marginTop:"1rem"}}>
-        <h3>Contact Information</h3>
+        <h3 className='profile-subtitle'>Contact Information</h3>
         </Paper>
         <Paper style={{display:"flex",gap:"75px",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
           <ContactInformation profileInfo={userData} />

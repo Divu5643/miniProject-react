@@ -17,7 +17,12 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import NoData from "../../component/common/NoData";
+import GoalSearch from "../../component/common/GoalSearch";
+import ContentHeader from "../../component/common/ContentHeader";
   let permanaentGoalList: IshowGoal[] = [];
+  const  setPermanaentGoalList = (list:IshowGoal[])=>{
+    permanaentGoalList = list;
+  }
 
   const GoalReviewer = () => {
     // For Snackbar
@@ -39,9 +44,9 @@ import NoData from "../../component/common/NoData";
     const loadData = () => {
       Axios.post("/goal/getGoalsByManager",{userID: userId})
         .then((response) => {
+          console.log("response:", response.data)
           setGoalList(response.data);
           permanaentGoalList = response.data;
-          console.log(permanaentGoalList);
         })
         .catch((error) => {
           openSnackBar(error.message);
@@ -55,12 +60,11 @@ import NoData from "../../component/common/NoData";
     }, []);
   
     useEffect(() => {
-      console.log("permannentList", permanaentGoalList);
+  
       if (filterValue == "pending") {
         const newList = permanaentGoalList.filter((goal) => {
           return goal.status == "pending";
         });
-        console.log("permannentList", permanaentGoalList);
         setGoalList(newList);
       } else if (filterValue == "complete") {
         const newList = permanaentGoalList.filter((goal) => {
@@ -75,18 +79,11 @@ import NoData from "../../component/common/NoData";
       } else {
         setGoalList(permanaentGoalList);
       }
-    }, [filterValue, goalList]);
+    }, [filterValue]);  
   
     return (
       <>
-        <div className="page-header">
-          <div
-            className="page-title"
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <span>Goals</span>
-          </div>
-        </div>
+        < ContentHeader title='Goals' />
         <div className="page-content" style={{margin:0}} >
           <div className="tabs-container">
             <Tabs
@@ -97,7 +94,10 @@ import NoData from "../../component/common/NoData";
               <Tab value="all" label="All Goals" />
               <Tab value="manager" label="Assign Goals" />
             </Tabs>
-            {tabValue == "all" && (
+            {tabValue == "all" && (<>
+               <div className="SearchContainer" >
+               <GoalSearch isGoal={true} permanentList={permanaentGoalList}  setGoalList={setGoalList} />
+             </div>
               <div className="filter-container">
                 <TextField
                   fullWidth={true}
@@ -107,13 +107,14 @@ import NoData from "../../component/common/NoData";
                   onChange={(event) => {
                     setFilterValue(event.target.value);
                   }}
-                >
+                  >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="pending">Pending</MenuItem>
                   <MenuItem value="progress">In-Progress</MenuItem>
-                  <MenuItem value="complete">Completed</MenuItem>
+                  <MenuItem value="complete">Complete</MenuItem>
                 </TextField>
               </div>
+                  </>
             )}
           </div>
           {tabValue == "all" ? (
@@ -121,6 +122,8 @@ import NoData from "../../component/common/NoData";
             goalList={goalList}
             setGoalList={setGoalList}
             openSnackBar={openSnackBar}
+            permanaentGoalList ={permanaentGoalList}
+  setPermanaentGoalList = {setPermanaentGoalList}
           />)
             
           ) : (

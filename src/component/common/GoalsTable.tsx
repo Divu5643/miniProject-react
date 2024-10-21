@@ -17,15 +17,20 @@ import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import { ModalClose } from "@mui/joy";
 import Axios from "../../axios/config";
+import { printDate, ToTitleCase } from "../../utils/StringFunction";
 
 const GoalsTable = ({
   goalList,
   setGoalList,
   openSnackBar,
+  permanaentGoalList,
+  setPermanaentGoalList,
 }: {
   goalList: IshowGoal[];
   setGoalList: React.Dispatch<React.SetStateAction<IshowGoal[]>>;
   openSnackBar: Function;
+  permanaentGoalList:IshowGoal[];
+  setPermanaentGoalList:Function;
 }) => {
   const [open, setOpen] = React.useState({
     open: false,
@@ -44,10 +49,9 @@ const GoalsTable = ({
         });
         setGoalList(newList);
 
-        console.log(response);
       })
       .catch((error) => {
-        console.log(error);
+
       });
   };
   const handleDelete = (goalId: Number) => {
@@ -56,8 +60,8 @@ const GoalsTable = ({
         let newList = goalList.filter((goal) => {
           return goal.goalId !== goalId;
         });
-        console.log("newList", newList);
         openSnackBar("Goal deleted");
+        setPermanaentGoalList([...newList]);
         setGoalList([...newList]);
       })
       .catch((error) => {
@@ -97,23 +101,27 @@ const GoalsTable = ({
               return (
                 <TableRow key={goal.goalId}>
                   <TableCell align="left" className="table-cell">
-                    {goal.employeeName}
+                    {ToTitleCase(goal.employeeName)}
+                    
                   </TableCell>
                   <TableCell
                     align="left"
                     className="table-cell"
                     sx={{ wordBreak: "break-word", maxWidth: "170px" }}
                   >
-                    {goal.goalOutcome}
+                    {ToTitleCase(goal.goalOutcome)}
+                    
                   </TableCell>
                   <TableCell align="left" className="table-cell">
-                    {completionDate.toLocaleDateString()}
+                    {printDate(completionDate)}
                   </TableCell>
                   <TableCell align="left" className="table-cell">
-                    {goal.status}{" "}
+                    
+                    {ToTitleCase(goal.status)}
                   </TableCell>
                   <TableCell align="left" className="table-cell">
-                    {goal.assignerName}
+                  {ToTitleCase(goal.assignerName)}
+                    
                   </TableCell>
                   <TableCell align="left" className="table-cell">
                     <Button
@@ -166,7 +174,7 @@ const GoalsTable = ({
             >
               <MenuItem value="pending">Pending</MenuItem>
               <MenuItem value="in-progress">In-Progress</MenuItem>
-              <MenuItem value="complete">Completed</MenuItem>
+              <MenuItem value="complete">Complete</MenuItem>
             </TextField>
           </div>
           <div>

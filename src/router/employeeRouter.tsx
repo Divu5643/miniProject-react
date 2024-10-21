@@ -30,7 +30,7 @@ const employeeRoutes = () => {
         element={<SideBar navItemList={EmployeeList}  ChildComponent={EmployeeGoals} />}
       />
       <Route
-        path="/employee/profile"
+        path="/employee/selfProfile"
         element={<SideBar navItemList={EmployeeList}  ChildComponent={EmployeeProfile} />}
       />
       <Route

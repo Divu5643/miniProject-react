@@ -3,6 +3,7 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import FlagIcon from '@mui/icons-material/Flag';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GradingRoundedIcon from '@mui/icons-material/GradingRounded';
 
 const AdminList = [
   {
@@ -22,9 +23,14 @@ const AdminList = [
   },
   {
     navName: "Performance",
-    navIcon: <ThumbUpIcon />,
+    navIcon: <GradingRoundedIcon />,
     navLink: "/admin/performance",
   },
+  // {
+  //   navName: "Profile",
+  //   navIcon: <AccountCircleIcon />,
+  //   navLink: "/admin/selfProfile",
+  // },
 ];
 const EmployeeList = [
   {
@@ -42,11 +48,11 @@ const EmployeeList = [
     navIcon: <FlagIcon />,
     navLink: "/employee/goal",
   },
-  {
-    navName: "Profile",
-    navIcon: <AccountCircleIcon />,
-    navLink: "/employee/profile",
-  },
+  // {
+  //   navName: "Profile",
+  //   navIcon: <AccountCircleIcon />,
+  //   navLink: "/employee/selfProfile",
+  // },
 ];
 const ReviewerList = [
   {
@@ -66,8 +72,13 @@ const ReviewerList = [
   },
   {
     navName: "Reviews",
-    navIcon: <AccountCircleIcon />,
+    navIcon: <GradingRoundedIcon />,
     navLink: "/manager/performance",
   },
+  // {
+  //   navName: "Profile",
+  //   navIcon: <AccountCircleIcon />,
+  //   navLink: "/manager/Selfprofile",
+  // },
 ];
 export { AdminList,EmployeeList,ReviewerList };

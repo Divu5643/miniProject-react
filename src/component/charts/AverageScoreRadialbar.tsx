@@ -80,7 +80,7 @@ const AverageScoreRadialBar = ({data}:{data:Number}) => {
     <>
     <div className="hello">
 
-    <Chart options={options} series={[data]} type='radialBar'  width={"350px"} />
+    <Chart options={options} series={[data.toFixed(1)]} type='radialBar'  width={"350px"} />
     </div>
     </>
   )

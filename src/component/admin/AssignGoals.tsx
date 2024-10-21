@@ -46,14 +46,17 @@ const AssignGoals = ({
   });
 
   const handleSubmit = async () => {
-
     setIsRequestLoading(true);
     await GoalSchema.validate(formData, { abortEarly: false })
       .then((response) => {
         setError({ userId: "", goalOutcome: "", completionDate: "" });
-       
-        let postBody = { ...formData, createdBy: loggedInUserId,completionDate: formData.completionDate?.format("YYYY-MM-DD") };
-        console.log("postBody:",postBody);
+
+        let postBody = {
+          ...formData,
+          createdBy: loggedInUserId,
+          completionDate: formData.completionDate?.format("YYYY-MM-DD"),
+        };
+        console.log("postBody:", postBody);
         Axios.post("/goal/CreateGoal", postBody)
           .then((response) => {
             loadData();
@@ -71,7 +74,6 @@ const AssignGoals = ({
           });
       })
       .catch((err: ValidationError) => {
-    
         let errArr = err?.inner || [];
         let errorObj: any = { userId: "", goalOutcome: "", completionDate: "" };
         errArr.map((err) => {
@@ -96,7 +98,7 @@ const AssignGoals = ({
       });
   };
   const loadEmployeesForAdmin = () => {
-    Axios.get("/getAllUsers")
+    Axios.get("/user/getAllUsers")
       .then((response) => {
         setUserList(
           response.data.filter((user: Iuser) => {
@@ -138,7 +140,6 @@ const AssignGoals = ({
             helperText={error.userId}
           >
             {userList.map((user) => {
-             
               return (
                 <MenuItem key={user.userid} value={user.userid}>
                   {user.name}
@@ -168,8 +169,20 @@ const AssignGoals = ({
               sx={{ width: "100%" }}
               defaultValue={null}
               value={formData.completionDate}
+              minDate={dayjs(new Date())}
               onChange={(newValue) => {
                 setFormData({ ...formData, completionDate: newValue });
+              }}
+              slots={{
+                textField: (params) => (
+                  <TextField
+                    {...params}
+                    error={error.completionDate == "" ? false : true}
+                    helperText={error.completionDate}
+                    InputProps={params.InputProps}
+                    inputProps={params.inputProps}
+                  />
+                ),
               }}
               label="Completion Date"
             />

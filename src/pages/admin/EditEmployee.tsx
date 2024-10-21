@@ -19,6 +19,7 @@ const EditEmployee = () => {
     password: "",
     role: "",
     department: "",
+    designation:""
   });
   const FormSubmit = async()=>{
     setIsRequestLoading(true);
@@ -28,8 +29,9 @@ const EditEmployee = () => {
         email: "",
         password: "",
         role: "",
-        department: "",})
-      Axios.post("/updateUser",formData).then((response)=>{
+        department: "",
+      designation:""})
+      Axios.post("/user/updateUser",formData).then((response)=>{
         setUserUpdated(true);
         setIsRequestLoading(false);
         setTimeout(()=>navigate("/admin/employees"),1000);
@@ -138,12 +140,25 @@ const EditEmployee = () => {
             </MenuItem>
             </TextField>
           </Grid>
+          <Grid size={{xs:10,sm:8,md:5}}>
+            <TextField
+              fullWidth={true}
+              size="medium"
+              variant="outlined"
+              label="Designation"
+              required={true}
+              error={error.designation==""?false:true}
+              helperText={error.designation}
+              value={formData.designation}
+              onChange={(event)=>{setFormData({...formData,designation:event.target.value.toLowerCase()})}}
+            />
+          </Grid>
           <Grid size={{xs:10,sm:8,md:5}} spacing={6} sx={{display:"flex",alignItems:"center",gap:"20px"}}>
             {isRequestLoading?<CircularProgress variant="soft" />:<Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained"> Save</Button>}
     
 
 
-            <Button variant="contained" onClick={()=>navigate("/admin/employees")} > Cancel</Button>
+            <Button variant="contained" onClick={()=>navigate("/admin/employees")} color='error' > Cancel</Button>
           </Grid>
         </Grid>
       </div>

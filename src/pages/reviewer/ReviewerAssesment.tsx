@@ -1,21 +1,45 @@
 import { Paper } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, UseSelector } from 'react-redux'
 import { RootState } from '../../redux/store/store'
 import ReviewerEmployeeTable from '../../component/reviewer/ReviewerEmployeeTable'
+import Axios from '../../axios/config'
+import { IuserByManager } from '../../utils/Interfaces/IReviewer'
+import CommonSnackbar from '../../component/common/CommonSnackbar'
+import NoData from '../../component/common/NoData'
+import ContentHeader from '../../component/common/ContentHeader'
+
 const ReviewerAssesment = () => {
+
+  const [open, setOpen] = React.useState({ open: false, message: "" });
+    const closeSnackbar = () => setOpen({ open: false, message: "" });
+    const openSnackBar = (message: string) =>
+      setOpen({ open: true, message: message });
+
   
-  const employeeList =  useSelector((state:RootState) =>state.employeeList);
+  const managerID = useSelector((state: RootState) => state.loginData.userId);
+  const [employeeList,setEmployeeList] = React.useState<IuserByManager[]>([]);
+  useEffect(() => {
+    Axios.post("/reviewer/getUserByManager", { userID: managerID })
+      .then((response) => {
+        setEmployeeList(response.data);
+      })
+      .catch((error) => {
+        openSnackBar(error.message);
+      });
+  }, []);
   return (
     <>
-    <div className="page-header">
-        <h1 className="page-title">Assesment</h1>
-    </div>
+    < ContentHeader title='Assesment' />
     <div className="page-content">
       <Paper elevation={6}>
-      <ReviewerEmployeeTable employeeList={employeeList} assesment={true} />
+        {employeeList.length ==0 ?<NoData />
+        :      
+      <ReviewerEmployeeTable formType={'review'}  employeeList={employeeList} assesment={true} />
+        }
       </Paper>
     </div>
+    <CommonSnackbar open={open.open} closeSnackbar={closeSnackbar} />
     </>
   )
 }

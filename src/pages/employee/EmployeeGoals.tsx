@@ -16,6 +16,8 @@ import Axios from "../../axios/config";
 import { useSelector, UseSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import NoData from "../../component/common/NoData";
+import ContentHeader from "../../component/common/ContentHeader";
 const EmployeeGoals = () => {
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
@@ -54,11 +56,13 @@ const EmployeeGoals = () => {
   };
   return (
     <>
-      <div className="page-header">
-        <h4 className="page-title">Goals</h4>
-      </div>
+
+      < ContentHeader title='Goals' />
       <div className="page-content">
         <Paper elevation={6}>
+          {goalList.length ==0 ? <NoData />
+            :
+          
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead className="table-header">
@@ -81,6 +85,7 @@ const EmployeeGoals = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
+                
                 {goalList.map((goal) => {
                   var completionDate = new Date(goal.completionDate.toString());
                   return (
@@ -112,6 +117,7 @@ const EmployeeGoals = () => {
               </TableBody>
             </Table>
           </TableContainer>
+}
         </Paper>
       </div>
       <Snackbar

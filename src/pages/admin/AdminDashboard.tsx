@@ -1,10 +1,11 @@
-import { Paper } from '@mui/material'
+import { Paper,} from '@mui/material'
 import React, { useEffect } from 'react'
 import PieChart from '../../component/charts/PieChart'
 import AverageScoreRadialBar from '../../component/charts/AverageScoreRadialbar'
 import GoalsChart from '../../component/charts/GoalsChart'
 import Axios from '../../axios/config'
 import { IchartData, IgoalChartResponse, IpieChartData } from '../../utils/Interfaces/IChart';
+import ContentHeader from '../../component/common/ContentHeader'
 
 const AdminDashboard:React.FC = () => {
   const [radialBarData,setRadialBarData] =  React.useState(0);
@@ -44,7 +45,7 @@ const AdminDashboard:React.FC = () => {
     })
   }
   const loadPieChartData = ()=>{
-    Axios.get("/chart/employeePieChart").then((chartData)=>{
+    Axios.get("/user/employeePieChart").then((chartData)=>{
       let names:string[] = [];
       let quantities:number[] = [];
 
@@ -61,10 +62,8 @@ const AdminDashboard:React.FC = () => {
 
   return (
    <>
-   <div className="page-header">
-        <h4 className="page-title">Dashboard</h4>
-      </div>
 
+      < ContentHeader title='Dashboard' />
     <div className="page-content">
       <Paper  elevation={6}  >
         <div className="piecharts" style={{display:"flex",justifyContent:"space-around",padding:"20px"}}>

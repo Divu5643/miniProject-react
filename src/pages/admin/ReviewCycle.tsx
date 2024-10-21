@@ -22,6 +22,8 @@ import ReviewerSchema from "../../validation/ReviewerValidation";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { ValidationError } from "yup";
 import { CircularProgress } from "@mui/joy";
+import { ToTitleCase } from "../../utils/StringFunction";
+import ContentHeader from "../../component/common/ContentHeader";
 
 
 const ReviewCycle = () => {
@@ -39,18 +41,20 @@ const ReviewCycle = () => {
     state.userList.filter((item: Iuser) => item.role == "manager")
   );
   const [formData, setFormData] = useState<{
-    EmployeeId: string | Number;
-    ManagerId: string | Number;
-    ReviewType: string;
+    employeeId: string | Number;
+    managerId: string | Number;
+    reviewType: string;
   }>({
-    EmployeeId: "",
-    ManagerId: "",
-    ReviewType: "",
+    employeeId: "",
+    managerId: "",
+    reviewType: "",
   });
   const [error,setError] =  React.useState({  EmployeeId: "",
     ManagerId: "",
     ReviewType: "",})
+
   const [ReviewList, setReviewList] = useState<IReviewShow[]>([]);
+
   const handleAdd = () => {
     setIsRequestLoading(true);
     ReviewerSchema.validate(formData, { abortEarly: false })
@@ -63,9 +67,9 @@ const ReviewCycle = () => {
             console.log(response);
             loadReviewData();
             setFormData({
-              EmployeeId: "",
-              ManagerId: "",
-              ReviewType: "",
+              employeeId: "",
+              managerId: "",
+              reviewType: "",
             });
             setIsRequestLoading(false);
           })
@@ -124,15 +128,7 @@ const ReviewCycle = () => {
 
   return (
     <>
-      <div className="page-header">
-        <div
-          className="page-title"
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <span>Review Cycle</span>
-         
-        </div>
-      </div>
+       < ContentHeader title='Review Cycle' />
       <div className="page-content">
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -164,11 +160,11 @@ const ReviewCycle = () => {
                     variant="standard"
                     label="Employee"
                     select={true}
-                    value={formData.EmployeeId}
+                    value={formData.employeeId}
                     onChange={(event) => {
                       setFormData({
                         ...formData,
-                        EmployeeId: parseInt(event.target.value),
+                        employeeId: parseInt(event.target.value),
                       });
                     }}
                     required={true}
@@ -178,7 +174,8 @@ const ReviewCycle = () => {
                     {employeeList.map((emp) => {
                       return (
                         <MenuItem key={emp.userid} value={emp.userid}>
-                          {emp.name}
+                          {ToTitleCase(emp.name)}
+                          
                         </MenuItem>
                       );
                     })}
@@ -195,11 +192,11 @@ const ReviewCycle = () => {
                     label="Manager"
                     select={true}
                     required={true}
-                    value={formData.ManagerId}
+                    value={formData.managerId}
                     onChange={(event) => {
                       setFormData({
                         ...formData,
-                        ManagerId: parseInt(event.target.value),
+                        managerId: parseInt(event.target.value),
                       });
                     }}
                     error= {error.ManagerId==""?false:true}
@@ -208,7 +205,8 @@ const ReviewCycle = () => {
                     {managerList.map((manager) => {
                       return (
                         <MenuItem key={manager.userid} value={manager.userid}>
-                          {manager.name}
+                           {ToTitleCase(manager.name)}
+                          
                         </MenuItem>
                       );
                     })}
@@ -225,11 +223,11 @@ const ReviewCycle = () => {
                     label="Cycle Type"
                     select={true}
                     required={true}
-                    value={formData.ReviewType}
+                    value={formData.reviewType}
                     onChange={(event) => {
                       setFormData({
                         ...formData,
-                        ReviewType: event.target.value,
+                       reviewType: event.target.value,
                       });
                     }}
                     error= {error.ReviewType==""?false:true}
@@ -263,13 +261,15 @@ const ReviewCycle = () => {
                 return (
                   <TableRow>
                     <TableCell className="table-data" align="left">
-                      {review.employeeName}
+                      {ToTitleCase(review.employeeName)}
+                      
                     </TableCell>
                     <TableCell className="table-data" align="left">
-                      {review.managerName}
+                    {ToTitleCase(review.managerName)}
+                      
                     </TableCell>
                     <TableCell className="table-data" align="left">
-                      {review.reviewType}
+                    {ToTitleCase(review.reviewType)}
                     </TableCell>
                     <TableCell align="center">
                       

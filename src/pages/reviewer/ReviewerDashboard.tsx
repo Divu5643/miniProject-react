@@ -7,23 +7,31 @@ import Axios from '../../axios/config'
 import { IchartData, IgoalChartResponse, IpieChartData } from '../../utils/Interfaces/IChart';
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store/store'
+import CommonSnackbar from '../../component/common/CommonSnackbar'
+import ContentHeader from '../../component/common/ContentHeader'
 
 const ReviewerDashboard = () => {
   const [radialBarData,setRadialBarData] =  React.useState(0);
   const[goalChartData, setGoalChartData] = React.useState<IchartData[]>([]);
+  // Snackbar
+  const [open, setOpen] = React.useState({open:false,message:""});
+  const closeSnackbar = () => setOpen({open:false,message:""});
+  const openSnackBar = (message:string) =>{console.log("opened snackbar");setOpen({open:true,message:message});}
+  // snackbar
   const [pieChartData, setpieChartData] = React.useState<IpieChartData>({
     labels:[],
     series:[]
 });
 const userId = useSelector((state:RootState)=>state.loginData.userId);
 useEffect(()=>{
+    Axios.post("/performance/averagePerformanceByManager",{userID:userId}).then((response)=>{
+      
+      setRadialBarData(response.data);
+    })
+    loadGoalChartData(); // call function to load goal chart data after getting average performance data.
+    loadPieChartData();
+  
 
-  Axios.post("/performance/averagePerformanceByManager",{userID:userId}).then((response)=>{
-    console.log(response);
-    setRadialBarData(response.data);
-  })
-  loadGoalChartData(); // call function to load goal chart data after getting average performance data.
-  loadPieChartData();
 },[])
 
 
@@ -31,7 +39,7 @@ const loadGoalChartData =()=>{
   Axios.get("/goal/getGoalDataForChart").then((result)=>{
     let series:IchartData[] =[{name:"Pending",data:[]},{name: 'In-Progress',data:[]},{name: 'Completed',data:[]}];
   
-    console.log(result.data)
+    
     result.data.forEach((goalData :IgoalChartResponse )=>{
       series.forEach((obj)=>{
         if(obj.name=="Pending"){
@@ -44,11 +52,11 @@ const loadGoalChartData =()=>{
       })
     })
     setGoalChartData(series);
-  })
+  }).catch((err)=>openSnackBar(err.message))
 }
 
 const loadPieChartData = ()=>{
-  Axios.post("/chart/employeePieChartByManger",{userID:userId}).then((chartData)=>{
+  Axios.post("/user/employeePieChartByManger",{userID:userId}).then((chartData)=>{
     setpieChartData({
        labels:["Employes"],
        series: [chartData.data],
@@ -58,9 +66,7 @@ const loadPieChartData = ()=>{
 
   return (
     <>
-   <div className="page-header">
-        <h4 className="page-title">Dashboard</h4>
-      </div>
+      < ContentHeader title='Dashboard' />
 
     <div className="page-content">
       <Paper  elevation={6}  >
@@ -73,7 +79,7 @@ const loadPieChartData = ()=>{
         </div>
       </Paper>
     </div>
-
+    <CommonSnackbar open={open} closeSnackbar ={closeSnackbar} />
    </>
   )
 }
