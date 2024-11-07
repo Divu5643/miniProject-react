@@ -11,6 +11,7 @@ import SpecificEmployeeReviews from "../pages/reviewer/SpecificEmployeeReviews";
 import EmployeeProfileAll from "../pages/EmployeeProfileAll";
 import ReviewerProfile from "../pages/reviewer/ReviewerProfile";
 import ProfileSetting from "../pages/employee/ProfileSetting";
+import GoalDetails from "../pages/GoalDetails";
 
 const reviewerRoutes = () => {
   return (
@@ -91,6 +92,15 @@ const reviewerRoutes = () => {
           <SideBar
             navItemList={ReviewerList}
             ChildComponent={ProfileSetting}
+          />
+        }
+      />
+      <Route
+        path="/manager/goalDetails/:goalId"
+        element={
+          <SideBar
+            navItemList={ReviewerList}
+            ChildComponent={GoalDetails}
           />
         }
       />

@@ -1,7 +1,7 @@
 import { Paper } from '@mui/material'
 import React from 'react'
 
-const NoData = () => {
+const NoData:React.FC = () => {
   return (
     <>
     <Paper elevation={6} sx={{padding:"2rem"}} >

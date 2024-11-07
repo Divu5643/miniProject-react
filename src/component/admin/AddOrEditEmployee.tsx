@@ -1,18 +1,13 @@
 import React from 'react'
 import {
-    Button,
     MenuItem,
-    Snackbar,
     TextField,
   } from "@mui/material";
   import Grid from "@mui/material/Grid2";
   import { Iuser } from "../../utils/Interfaces/Iuser";
-  import employeeSchema from "../../validation/AddEmployeeValidation";
-  import { ValidationError } from "yup";
-  import { useNavigate } from "react-router-dom";
-  import Axios from "../../axios/config";
 
-const AddOrEditEmployee = () => {
+
+const AddOrEditEmployee :React.FC = () => {
     const [formData, setFormData] = React.useState<Iuser>({
       userid: 0,
         name: "",

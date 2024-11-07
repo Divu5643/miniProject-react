@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import IProfile from '../../utils/Interfaces/IProfile';
 
 
-const ContactInformation = ({profileInfo}:{profileInfo:IProfile}) => {
+const ContactInformation:React.FC<{profileInfo:IProfile}> = ({profileInfo}) => {
   return (
    <>
   <Grid container  size={{xs:12,sm:8,md:6}} spacing={2} >

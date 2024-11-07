@@ -1,8 +1,6 @@
 
 import {
-    IconButton,
     MenuItem,
-    Snackbar,
     Tab,
     Tabs,
     TextField,
@@ -12,19 +10,20 @@ import {
   import GoalsTable from "../../component/common/GoalsTable";
   import Axios from "../../axios/config";
   import IshowGoal from "../../utils/Interfaces/IGoals";
-  import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
   import AssignGoals from "../../component/admin/AssignGoals";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import NoData from "../../component/common/NoData";
-import GoalSearch from "../../component/common/GoalSearch";
-import ContentHeader from "../../component/common/ContentHeader";
+
+import { setTitle } from "../../redux/slice/userSlice";
+import CommonSnackbar from "../../component/common/CommonSnackbar";
   let permanaentGoalList: IshowGoal[] = [];
   const  setPermanaentGoalList = (list:IshowGoal[])=>{
     permanaentGoalList = list;
   }
 
-  const GoalReviewer = () => {
+  const GoalReviewer:React.FC = () => {
+    const dispatch = useDispatch();
     // For Snackbar
     const [open, setOpen] = React.useState({ open: false, message: "" });
     const closeSnackbar = () => setOpen({ open: false, message: "" });
@@ -39,53 +38,40 @@ import ContentHeader from "../../component/common/ContentHeader";
     // For filter
     const [filterValue, setFilterValue] = React.useState<string>("all");
     // For Goals
+    const [totalCount,setTotalCount] = React.useState<number>(0);
+    const [filterAndSearch, setFilterAndSearch] = React.useState({
+      RowCount: 5,
+      PageNumber: 0,
+      FilterValue:"all",
+      Search: "",
+    });
+
     const [goalList, setGoalList] = React.useState<IshowGoal[]>([]);
     const userId =  useSelector((state:RootState)=>state.loginData.userId);
-    const loadData = () => {
-      Axios.post("/goal/getGoalsByManager",{userID: userId})
-        .then((response) => {
-          console.log("response:", response.data)
-          setGoalList(response.data);
-          permanaentGoalList = response.data;
-        })
-        .catch((error) => {
-          openSnackBar(error.message);
-        });
 
-        
-    };
-  
+
     useEffect(() => {
-      loadData();
-    }, []);
+      const logData = setTimeout(() => {
+        loadData();
+      }, 400);
+      return () => clearTimeout(logData);
+    }, [filterAndSearch]);
   
-    useEffect(() => {
+    const loadData=()=>{
+  Axios.post("/goal/getAllGoalsforManager",{...filterAndSearch,managerId:userId}).then((response)=>
+    {
+      setTotalCount(response.data.total);
+      setGoalList(response.data.goals);
+    })
+    }
   
-      if (filterValue == "pending") {
-        const newList = permanaentGoalList.filter((goal) => {
-          return goal.status == "pending";
-        });
-        setGoalList(newList);
-      } else if (filterValue == "complete") {
-        const newList = permanaentGoalList.filter((goal) => {
-          return goal.status == "complete";
-        });
-        setGoalList(newList);
-      } else if (filterValue == "progress") {
-        const newList = permanaentGoalList.filter((goal) => {
-          return goal.status == "in-progress";
-        });
-        setGoalList(newList);
-      } else {
-        setGoalList(permanaentGoalList);
-      }
-    }, [filterValue]);  
+
   
     return (
       <>
-        < ContentHeader title='Goals' />
-        <div className="page-content" style={{margin:0}} >
-          <div className="tabs-container">
+        {/* < ContentHeader title='Goals' /> */}
+        <div className="page-content"  >
+          <div className="tabs">
             <Tabs
               value={tabValue}
               onChange={handleChange}
@@ -95,8 +81,8 @@ import ContentHeader from "../../component/common/ContentHeader";
               <Tab value="manager" label="Assign Goals" />
             </Tabs>
             {tabValue == "all" && (<>
-               <div className="SearchContainer" >
-               <GoalSearch isGoal={true} permanentList={permanaentGoalList}  setGoalList={setGoalList} />
+               <div className="SearchContainer filter-container" >
+               {/* <GoalSearch isGoal={true} permanentList={permanaentGoalList}  setGoalList={setGoalList} /> */}
              </div>
               <div className="filter-container">
                 <TextField
@@ -123,33 +109,22 @@ import ContentHeader from "../../component/common/ContentHeader";
             setGoalList={setGoalList}
             openSnackBar={openSnackBar}
             permanaentGoalList ={permanaentGoalList}
-  setPermanaentGoalList = {setPermanaentGoalList}
+             setPermanaentGoalList = {setPermanaentGoalList}
+            totalCount={totalCount}
+            filterAndSearch={filterAndSearch}
+            setFilterAndSearch={setFilterAndSearch}
+
           />)
             
           ) : (
             <AssignGoals loadData={loadData} openSnackBar={openSnackBar} user="manager" />
           )}
         </div>
-        <Snackbar
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-          sx={{ maxWidth: "250px" }}
-          open={open.open}
-          autoHideDuration={4000}
-          onClose={closeSnackbar}
-          message={open.message}
-          action={
-            <>
-              <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={closeSnackbar}
-              >
-                <CloseRoundedIcon fontSize="small" />
-              </IconButton>
-            </>
-          }
+        <CommonSnackbar
+        open={open}
+        closeSnackbar={closeSnackbar}
         />
+
       </>
     );
   };

@@ -3,7 +3,7 @@ import React from 'react'
 import Alert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
 
-const CustomAlert = ({open=false,message="",handleClose}:{open:boolean,message:string,handleClose:Function}) => {
+const CustomAlert:React.FC<{open:boolean,message:string,handleClose:Function}> = ({open=false,message="",handleClose}) => {
   return (
     <Collapse in={open}>
     <Alert

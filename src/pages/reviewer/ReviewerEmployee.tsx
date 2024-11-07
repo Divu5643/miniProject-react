@@ -3,13 +3,14 @@ import React, { useEffect } from "react";
 import Axios from "../../axios/config";
 import { IuserByManager } from "../../utils/Interfaces/IReviewer";
 import ReviewerEmployeeTable from "../../component/reviewer/ReviewerEmployeeTable";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import NoData from "../../component/common/NoData";
 import CommonSnackbar from "../../component/common/CommonSnackbar";
-import ContentHeader from "../../component/common/ContentHeader";
+import { setTitle } from "../../redux/slice/userSlice";
 
-const ReviewerEmployee = () => {
+const ReviewerEmployee:React.FC = () => {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
   const openSnackBar = (message: string) =>
@@ -19,6 +20,7 @@ const ReviewerEmployee = () => {
 
 
   useEffect(() => {
+    dispatch(setTitle("Employee"));
     Axios.post("/reviewer/getUserByManager", { userID: managerID })
       .then((response) => {
         setEmployeeList(response.data);
@@ -29,7 +31,7 @@ const ReviewerEmployee = () => {
   }, []);
   return (
     <>
-      < ContentHeader title='Employees' />
+      {/* < ContentHeader title='Employees' /> */}
       <div className="page-content">
         <Paper elevation={6}>
           {employeeList.length == 0 ? (

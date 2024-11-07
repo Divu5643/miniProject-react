@@ -4,7 +4,7 @@ interface IReviewer{
     ReviewType:string
 }
 interface IReviewShow{
- reviewId :Number
+ reviewId :number
      employeeId :Number
      employeeName :string
      managerId :Number

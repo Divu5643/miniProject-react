@@ -8,9 +8,8 @@ import { RootState } from '../../redux/store/store';
 import Axios from '../../axios/config';
 import IProfile from '../../utils/Interfaces/IProfile';
 import dayjs  from 'dayjs';
-import ContentHeader from '../../component/common/ContentHeader';
 
-const AdminProfile = () => {
+const AdminProfile :React.FC= () => {
     const navigate =  useNavigate();
     const userId =  useSelector((state:RootState)=>state.loginData.userId);
     const [userData,setUserData] = React.useState<IProfile>({});
@@ -40,7 +39,7 @@ const AdminProfile = () => {
   
     return (
       <>
-     < ContentHeader title='Profile' />
+     {/* < ContentHeader title='Profile' /> */}
         <div className="page-content" >
           <Paper elevation={5} style={{width:"100%"}}  > 
           <Paper>

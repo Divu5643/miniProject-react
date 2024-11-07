@@ -12,6 +12,9 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import EmployeeProfileAll from "../pages/EmployeeProfileAll";
 import ProfileSetting from "../pages/employee/ProfileSetting";
 import AdminProfile from "../pages/admin/AdminProfile";
+import GoalDetails from "../pages/GoalDetails";
+import DesignationPage from "../pages/admin/DesignationPage";
+import DepartmentPage from "../pages/admin/DepartmentPage";
 
 const adminRoutes = () => {
   return (
@@ -79,6 +82,31 @@ const adminRoutes = () => {
         element={
           <div>
             <SideBar navItemList={AdminList} ChildComponent={ProfileSetting} />
+          </div>
+        }
+      />
+       <Route
+        path="/admin/goalDetails/:goalId"
+        element={
+          <SideBar
+            navItemList={AdminList}
+            ChildComponent={GoalDetails}
+          />
+        }
+      />
+      <Route
+        path="/admin/department"
+        element={
+          <div>
+            <SideBar navItemList={AdminList} ChildComponent={DepartmentPage} />
+          </div>
+        }
+      />
+      <Route
+        path="/admin/designation"
+        element={
+          <div>
+            <SideBar navItemList={AdminList} ChildComponent={DesignationPage} />
           </div>
         }
       />

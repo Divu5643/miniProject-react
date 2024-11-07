@@ -2,7 +2,6 @@ import {
   Button,
   CircularProgress,
   MenuItem,
-  Snackbar,
   TextField,
 } from "@mui/material";
 import React from "react";
@@ -12,11 +11,17 @@ import employeeSchema from "../../validation/AddEmployeeValidation";
 import { ValidationError } from "yup";
 import { useNavigate } from "react-router-dom";
 import Axios from "../../axios/config";
+import CommonSnackbar from "../../component/common/CommonSnackbar";
 
-const AddEmployee = () => {
+const AddEmployee:React.FC = () => {
   const navigate = useNavigate();
   const [isRequestLoading,setIsRequestLoading] =  React.useState(false);
-  const[userSaved,setUserSaved] =  React.useState(false);
+
+  const [open, setOpen] = React.useState({ open: false, message: "" });
+  const closeSnackbar = () => setOpen({ open: false, message: "" });
+  const openSnackBar = (message: string) =>
+    setOpen({ open: true, message: message });
+
   const [formData, setFormData] = React.useState<Iuser>({
     userid: 0,
     name: "",
@@ -35,7 +40,7 @@ const AddEmployee = () => {
     designation:"",
     department: "",
   });
-
+  
   const FormSubmit = async()=>{
     setIsRequestLoading(true);
     await employeeSchema.validate(formData,{abortEarly:false})
@@ -47,14 +52,15 @@ const AddEmployee = () => {
         designation:"",
         department: "",})
       Axios.post("/user/createUser",formData).then((response)=>{
-        setUserSaved(true);
+        // setUserSaved(true);
         setIsRequestLoading(false);
+        openSnackBar("Employee created successfully!");
         setFormData({
           userid: 0,
           name: "",
           email: "",
           password: "",
-          role: "",
+          role: 0,
           department: "",
           designation:"",
           isDeleted: false,
@@ -62,11 +68,13 @@ const AddEmployee = () => {
         setTimeout(()=>navigate("/admin/employees"),1000);
         
       }).catch(error=>{
-        console.log(error);
-        setIsRequestLoading(false)})
+        console.log("error:",error);
+        openSnackBar(error.message);
+        setIsRequestLoading(false)
+      })
     })
     .catch((err:ValidationError) => {
-      console.log(err);
+      // console.log(err);
       let errArr = err?.inner || [];
       let errorObj: any= {name: "",
         email: "",
@@ -74,7 +82,7 @@ const AddEmployee = () => {
         role: "",
         department: "",};
       errArr.map((err) => {
-          console.log(typeof(err))
+          // console.log(typeof(err))
         errorObj[err?.path as string] = err?.message;
         console.log("Error Object",errorObj)
           setError(errorObj);
@@ -85,11 +93,8 @@ const AddEmployee = () => {
 
   return (
     <>
-      <div className="page-header">
-        <h4 className="page-title">Add Employee</h4>
-      </div>
       <div className="page-content" style={{ padding: "2rem" }}>
-        <Grid container rowSpacing={8} columnSpacing={{ xs: 1, sm: 2, md: 8 }}>
+        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 8 }}>
           <Grid size={{xs:10,sm:8,md:5}}>
             <TextField
               fullWidth={true}
@@ -121,7 +126,7 @@ const AddEmployee = () => {
               fullWidth={true}
               size="medium"
               variant="outlined"
-              label="password"
+              label="Password"
               type="password"
               required={true}
               error={error.password==""?false:true}
@@ -156,13 +161,13 @@ const AddEmployee = () => {
               value={formData.role}
               onChange={(event)=>{setFormData({...formData,role:event.target.value})}}
             >
-             <MenuItem  value="admin">
+             <MenuItem  value={1}>
               Admin
             </MenuItem>
-            <MenuItem  value="manager">
+            <MenuItem  value={2}>
               Manager
             </MenuItem>
-            <MenuItem  value="employee">
+            <MenuItem  value={3}>
               Employee
             </MenuItem>
             </TextField>
@@ -173,8 +178,7 @@ const AddEmployee = () => {
               size="medium"
               variant="outlined"
               label="Designation"
-              required={true}
-              error={error.designation==""?false:true}
+              error={error.designation=="" || error.designation == null?false:true}
               helperText={error.designation}
               value={formData.designation}
               onChange={(event)=>{setFormData({...formData,designation:event.target.value.toLowerCase()})}}
@@ -184,17 +188,15 @@ const AddEmployee = () => {
             {isRequestLoading 
             ?<CircularProgress />
               :<Button onClick={FormSubmit}sx={{margin:"1rem"}} variant="contained" type="submit">Submit</Button>}
-            <Button variant="contained" onClick={()=>navigate("/admin/employees")} > Cancel</Button>
+            <Button variant="contained" color="error" onClick={()=>navigate("/admin/employees")} > Cancel</Button>
           </Grid>
         </Grid>
       </div>
-      <Snackbar
-        open={userSaved}
-        autoHideDuration={6000}
-        onClose={()=>{setUserSaved(false);}}
-        message="Employee Saved"
-        
+      <CommonSnackbar
+      open={open}
+      closeSnackbar={closeSnackbar}
       />
+     
     </>
   );
 };

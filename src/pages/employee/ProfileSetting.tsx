@@ -7,11 +7,11 @@ import {
   Paper,
   TextField,
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import IProfile from "../../utils/Interfaces/IProfile";
 import employeeProfileSchema from "../../validation/ProfileValidation";
 import { ValidationError } from "yup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import Axios from "../../axios/config";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -19,15 +19,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CommonSnackbar from "../../component/common/CommonSnackbar";
-import ContentHeader from "../../component/common/ContentHeader";
-const ProfileSetting = () => {
+import { setLoggedInUser, setTitle } from "../../redux/slice/userSlice";
+import ILoginData from "../../utils/Interfaces/ILogin";
+import { getRandomColor } from "../../utils/StringFunction";
+const ProfileSetting:React.FC = () => {
   const [isRequestLoading, setIsRequestLoading] = React.useState(false);
 
 
-
+const dispatch =  useDispatch();
   const navigate = useNavigate();
-  const userId = useSelector((state: RootState) => state.loginData.userId);
-  const userRole = useSelector((state: RootState) => state.loginData.role);
+  const loginData:ILoginData = useSelector((state: RootState) => state.loginData);
+  
   const [open,setOpen] = React.useState({open: false, message:""});
   const closeSnackbar = ()=>setOpen({open: false, message:""});
   const openSnackBar = (message: string) => setOpen({open: true, message: message});
@@ -35,7 +37,7 @@ const ProfileSetting = () => {
   // const [formData, setFormData] = React.useState<IProfile>({ ...profileInfo, 
   //   dateOfBirth: profileInfo.dateOfBirth == null? null : dayjs(profileInfo.dateOfBirth.$d)});
       
-  const [formData, setFormData] = React.useState<IProfile>({userId:userId,
+  const [formData, setFormData] = React.useState<IProfile>({userId:loginData.userId,
     name:"",
     designation:"",
     department:"",
@@ -47,14 +49,15 @@ const ProfileSetting = () => {
     personalEmail:""});
 
   useEffect(()=>{
-    Axios.post("/profile/getEmployeeDetails",{userID:userId})
+    dispatch(setTitle("Profile Setting"))
+    Axios.post("/profile/getEmployeeDetails",{userID:loginData.userId})
     .then((response)=>{
         console.log("response:",response.data)
         setFormData({...response.data,
           dateOfBirth: response.data.dateOfBirth ==null ?null :dayjs(response.data.dateOfBirth)});
     }).catch((error)=>{
       setFormData({
-        userId:userId,
+        userId:loginData.userId,
         name:"",
         designation:"",
         department:"",
@@ -95,12 +98,14 @@ const ProfileSetting = () => {
             {...formData,
                 dateOfBirth: formData.dateOfBirth?.format("YYYY-MM-DD")})
           .then((result) => {
-                setFormData({
-
-                })
+                
                 openSnackBar("Profile updated successfully");
             setIsRequestLoading(false);
-            navigate(`/${userRole}/selfProfile`, { replace: true });
+            dispatch(setLoggedInUser({user:{...loginData,username:formData.name?.toString()}, AvatarColor:getRandomColor()}))
+            setFormData({
+            })
+            navigate(`/${loginData.role}/selfProfile`, { replace: true });
+
           })
           .catch((error) => {
             console.log("error", error);
@@ -131,7 +136,7 @@ const ProfileSetting = () => {
   return (
     <>
       
-      <ContentHeader title="Employee Details" />
+      {/* <ContentHeader title="Employee Details" /> */}
       <div className="page-content">
         <Paper
           elevation={6}
@@ -185,7 +190,7 @@ const ProfileSetting = () => {
             inputProps={params.inputProps}
                 />
               }}
-              label="Completion Date"
+              label="Date Of Birth"
             />
           </LocalizationProvider>
             </Grid>
@@ -235,7 +240,7 @@ const ProfileSetting = () => {
                 variant="contained"
                 color="error"
                 onClick={() => {
-                  navigate(`/${userRole}/Selfprofile`);
+                  navigate(`/${loginData.role}/Selfprofile`);
                 }}
               >
                 Cancel

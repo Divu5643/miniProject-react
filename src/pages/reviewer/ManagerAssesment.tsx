@@ -1,11 +1,15 @@
 import React from 'react'
-import ContentHeader from '../../component/common/ContentHeader'
-import AssesmentForm from '../../component/common/AssesmentForm'
 
-const ManagerAssesment = () => {
+import AssesmentForm from '../../component/common/AssesmentForm'
+import { useDispatch } from 'react-redux';
+import { setTitle } from '../../redux/slice/userSlice';
+
+const ManagerAssesment:React.FC = () => {
+  const dispatch = useDispatch();
+  dispatch(setTitle("Assesment"));
   return (
     <>
-    <ContentHeader title="Assesment" />
+    {/* <ContentHeader title="Assesment" /> */}
     <div className="page-content">
         <AssesmentForm />
     </div>

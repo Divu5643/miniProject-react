@@ -1,7 +1,5 @@
 import {
-  IconButton,
   MenuItem,
-  Snackbar,
   Tab,
   Tabs,
   TextField,
@@ -11,22 +9,26 @@ import "../../assets/css/AdminGoals.css";
 import GoalsTable from "../../component/common/GoalsTable";
 import Axios from "../../axios/config";
 import IshowGoal from "../../utils/Interfaces/IGoals";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AssignGoals from "../../component/admin/AssignGoals";
-import GoalSearch from "../../component/common/GoalSearch";
 import CommonSnackbar from "../../component/common/CommonSnackbar";
-import ContentHeader from "../../component/common/ContentHeader";
+import { useDispatch } from "react-redux";
+import { setTitle } from "../../redux/slice/userSlice";
 let permanaentGoalList: IshowGoal[] = [];
 const setPermanaentGoalList =(list:IshowGoal[])=>{
   permanaentGoalList = list;
 }
-const AdminGoals = () => {
+const AdminGoals:React.FC = () => {
+  const dispatch = useDispatch();
+  dispatch(setTitle("Goals"));
+  // For Snackbar
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
   const openSnackBar = (message: string) =>
     setOpen({ open: true, message: message });
 
 
+
+// For Tabs
   const [tabValue, setTabValue] = React.useState("all");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -34,51 +36,35 @@ const AdminGoals = () => {
   
   const [filterValue, setFilterValue] = React.useState<string>("all");
   const [goalList, setGoalList] = React.useState<IshowGoal[]>([]);
+const [totalCount,setTotalCount] = React.useState<number>(0);
+  const [filterAndSearch, setFilterAndSearch] = React.useState({
+    RowCount: 5,
+    PageNumber: 0,
+    FilterValue:"all",
+    Search: "",
+  });
 
-  const loadData = () => {
-    Axios.get("/goal/getGoals")
-      .then((response) => {
-        setGoalList(response.data);
-        permanaentGoalList = response.data;
-        console.log(permanaentGoalList);
-      })
-      .catch((error) => {
-        openSnackBar(error.message);
-      });
-  };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const logData = setTimeout(() => {
+      loadData();
+    }, 400);
+    return () => clearTimeout(logData);
+  }, [filterAndSearch]);
 
-  useEffect(() => {
-    console.log("permannentList", permanaentGoalList);
-    if (filterValue == "pending") {
-      const newList = permanaentGoalList.filter((goal) => {
-        return goal.status == "pending";
-      });
-      console.log("permannentList", permanaentGoalList);
-      setGoalList(newList);
-    } else if (filterValue == "complete") {
-      const newList = permanaentGoalList.filter((goal) => {
-        return goal.status == "complete";
-      });
-      setGoalList(newList);
-    } else if (filterValue == "progress") {
-      const newList = permanaentGoalList.filter((goal) => {
-        return goal.status == "in-progress";
-      });
-      setGoalList(newList);
-    } else {
-      setGoalList(permanaentGoalList);
-    }
-  }, [filterValue]);
+  const loadData=()=>{
+Axios.post("/goal/getAllGoals",filterAndSearch).then((response)=>
+  {
+    setTotalCount(response.data.total);
+    setGoalList(response.data.goals);
+  })
+  }
 
   return (
     <>
-            < ContentHeader title='Goals' />
-      <div className="page-content" style={{margin:0}} >
-        <div className="tabs-container">
+            {/* < ContentHeader title='Goals' /> */}
+      <div className="page-content"  >
+        <div className="tabs">
           <Tabs
             value={tabValue}
             onChange={handleChange}
@@ -88,17 +74,29 @@ const AdminGoals = () => {
             <Tab value="manager" label="Assign Goals" />
           </Tabs>
           {tabValue == "all" && (<>
-            <div className="SearchContainer" >
-              <GoalSearch isGoal={true}  permanentList={permanaentGoalList}  setGoalList={setGoalList} />
-            </div>
+            <div className="search-container">
+            <TextField
+              label="Search"
+              variant="standard"
+              fullWidth={true}
+              value={filterAndSearch.Search}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setFilterAndSearch({
+                  ...filterAndSearch,
+                  Search: event.target.value,
+                  PageNumber:0
+                });
+              }}
+            />
+          </div>
             <div className="filter-container">
               <TextField
                 fullWidth={true}
                 variant="standard"
                 select={true}
-                value={filterValue}
+                value={filterAndSearch.FilterValue}
                 onChange={(event) => {
-                  setFilterValue(event.target.value);
+                  setFilterAndSearch({...filterAndSearch,FilterValue:event.target.value});
                 }}
                 >
                 <MenuItem value="all">All</MenuItem>
@@ -116,8 +114,10 @@ const AdminGoals = () => {
             setGoalList={setGoalList}
             openSnackBar={openSnackBar}
             permanaentGoalList={permanaentGoalList}
-
             setPermanaentGoalList={setPermanaentGoalList}
+            totalCount={totalCount}
+            filterAndSearch={filterAndSearch}
+            setFilterAndSearch={setFilterAndSearch}
           />
         ) : (
           <AssignGoals loadData={loadData} openSnackBar={openSnackBar} user="admin" />

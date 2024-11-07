@@ -3,10 +3,16 @@ interface Iuser{
     name:string;
     email?:string;
     password?:string;
-    role?:string;
-    department?:string;
-    designation? :string;
+    roleId?:number;
+    deptId?:number;
+    designationId? :number;
     isDeleted?:boolean;
 }
 
+enum userRole{
+    "admin" = 1,
+    "manager" = 2,
+    "employee" = 3
+}
 export type {Iuser};
+export {userRole};

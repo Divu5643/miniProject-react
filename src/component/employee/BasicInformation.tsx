@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 
 
-const BasicInformation = ({ profileInfo }: { profileInfo: IProfile }) => {
+const BasicInformation :React.FC< { profileInfo: IProfile }>= ({ profileInfo }) => {
   const color = useSelector((state:RootState)=>state.AvatarColor);
   return (
     <Box sx={{ padding: 2 }}>

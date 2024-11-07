@@ -5,7 +5,7 @@ import "../../assets/css/ErrorPage.css"
 import Errorsvg from "../../assets/Error.svg"
 import { Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-const ErrorPage = () => {
+const ErrorPage:React.FC = () => {
 
     const isAuthenticated = useSelector((state:RootState) =>state.isAuthenticated);
     const role = useSelector((state:RootState)=>state.loginData.role)

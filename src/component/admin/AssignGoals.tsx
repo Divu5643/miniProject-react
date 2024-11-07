@@ -13,21 +13,23 @@ import dayjs, { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import IshowGoal from "../../utils/Interfaces/IGoals";
+import { ToTitleCase } from "../../utils/StringFunction";
 
-const AssignGoals = ({
-  loadData,
-  openSnackBar,
-  user,
-}: {
+const AssignGoals:React.FC<{
   loadData: Function;
   openSnackBar: Function;
   user: string;
+}> = ({
+  loadData,
+  openSnackBar,
+  user,
 }) => {
   const [isRequestLoading, setIsRequestLoading] = React.useState(false);
   const loggedInUserId = useSelector((state: RootState) => {
     return state.loginData.userId;
   });
 
+  
   const [userList, setUserList] = React.useState<Iuser[]>([]);
 
   const [formData, setFormData] = useState<{
@@ -98,13 +100,9 @@ const AssignGoals = ({
       });
   };
   const loadEmployeesForAdmin = () => {
-    Axios.get("/user/getAllUsers")
+    Axios.get("/user/getAllEmployee")
       .then((response) => {
-        setUserList(
-          response.data.filter((user: Iuser) => {
-            return user.role == "employee";
-          })
-        );
+        setUserList(response.data);
       })
       .catch((error) => {
         openSnackBar(error.message);
@@ -122,7 +120,7 @@ const AssignGoals = ({
     <>
       <Grid
         container
-        rowSpacing={8}
+        rowSpacing={3}
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         sx={{ display: "flex", justifyContent: "center" }}
       >
@@ -142,7 +140,7 @@ const AssignGoals = ({
             {userList.map((user) => {
               return (
                 <MenuItem key={user.userid} value={user.userid}>
-                  {user.name}
+                  {ToTitleCase(user.name)}
                 </MenuItem>
               );
             })}

@@ -13,21 +13,27 @@ import {
 import React, { useEffect } from "react";
 import IshowGoal from "../../utils/Interfaces/IGoals";
 import Axios from "../../axios/config";
-import { useSelector, UseSelector } from "react-redux";
+import { useDispatch, useSelector, UseSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import NoData from "../../component/common/NoData";
-import ContentHeader from "../../component/common/ContentHeader";
-const EmployeeGoals = () => {
+import { setTitle } from "../../redux/slice/userSlice";
+import { ToTitleCase } from "../../utils/StringFunction";
+const EmployeeGoals:React.FC = () => {
+
+  // Snackbar
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
   const openSnackBar = (message: string) =>
     setOpen({ open: true, message: message });
+
+  const dispatch = useDispatch();
+  // other states
   const userID = useSelector((state: RootState) => state.loginData.userId);
   const [goalList, setGoalList] = React.useState<IshowGoal[]>([]);
-
+  
   useEffect(() => {
-    console.log("userId : ", userID);
+    dispatch(setTitle("Goals"));
     Axios.post("/goal/getGoalsForEmployee", { userID: userID })
       .then((response) => {
         setGoalList(response.data);
@@ -37,6 +43,8 @@ const EmployeeGoals = () => {
         openSnackBar(error.message);
       });
   }, []);
+
+
   const handleChangeStatus = (goalId: Number) => {
     Axios.post("/goal/markAsInProgress", { userID: goalId })
       .then((response) => {
@@ -54,10 +62,13 @@ const EmployeeGoals = () => {
         openSnackBar(error.message);
       });
   };
+
+
+
   return (
     <>
 
-      < ContentHeader title='Goals' />
+      {/* < ContentHeader title='Goals' /> */}
       <div className="page-content">
         <Paper elevation={6}>
           {goalList.length ==0 ? <NoData />
@@ -88,7 +99,7 @@ const EmployeeGoals = () => {
                 
                 {goalList.map((goal) => {
                   var completionDate = new Date(goal.completionDate.toString());
-                  return (
+                  return (  
                     <TableRow>
                       <TableCell className="table-data">
                         {goal.goalOutcome}
@@ -100,7 +111,8 @@ const EmployeeGoals = () => {
                         {goal.status}
                       </TableCell>
                       <TableCell className="table-data" align="center">
-                        {goal.assignerName.charAt(0).toUpperCase() }{goal.assignerName.slice(1)}
+                        {ToTitleCase(goal.assignerName)}
+                      
                       </TableCell>
                       {goal.status == "pending" && (
                         <TableCell className="table-data" align="right">

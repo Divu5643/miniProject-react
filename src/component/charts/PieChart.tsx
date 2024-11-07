@@ -4,9 +4,10 @@ import Chart from "react-apexcharts";
 
 import { IpieChartData } from '../../utils/Interfaces/IChart';
 
-const employeePieChart = ({pieChartdata}:{pieChartdata:IpieChartData}) => {
+const employeePieChart:React.FC<{pieChartdata:IpieChartData,name:string}> = ({pieChartdata,name}) => {
    
     const total = pieChartdata.series.reduce((acc,value)=>acc+value,0)
+    
     const options = {
         labels:pieChartdata.labels,
         plotOptions:{
@@ -26,7 +27,7 @@ const employeePieChart = ({pieChartdata}:{pieChartdata:IpieChartData}) => {
         },
         
         title:{
-            text:"Employe Pie Chart",
+            text:name,
             align: 'center',
             style:{
                 fontWeight: 'bold',
@@ -43,7 +44,7 @@ const employeePieChart = ({pieChartdata}:{pieChartdata:IpieChartData}) => {
     <>
     {/* <Paper elevation={8} > */}
     <div className="donut">
-    <Chart options={options} series={pieChartdata.series} type='donut' width="350px" />
+    <Chart options={options} series={pieChartdata.series} type='donut' width="300px" />
   </div>
     {/* </Paper> */}
     </>

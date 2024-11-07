@@ -3,18 +3,20 @@ import React, { useEffect } from 'react'
 import BasicInformation from '../../component/employee/BasicInformation';
 import ContactInformation from '../../component/employee/ContactInformation';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
 import Axios from '../../axios/config';
 import IProfile from '../../utils/Interfaces/IProfile';
 import dayjs  from 'dayjs';
-import ContentHeader from '../../component/common/ContentHeader';
-const ReviewerProfile = () => {
+import { setTitle } from '../../redux/slice/userSlice';
+import { ToTitleCase } from '../../utils/StringFunction';
+const ReviewerProfile:React.FC = () => {
     const navigate =  useNavigate();
     const userId =  useSelector((state:RootState)=>state.loginData.userId);
     const [userData,setUserData] = React.useState<IProfile>({});
-  
+    const dispatch = useDispatch();
     useEffect(()=>{
+      dispatch(setTitle(ToTitleCase("Profile")));
       Axios.post("/profile/getEmployeeDetails",{userID:userId})
       .then((response)=>{
         setUserData({...response.data,
@@ -38,7 +40,7 @@ const ReviewerProfile = () => {
     return (
       <>
       
-        < ContentHeader title='Profile' />
+        {/* < ContentHeader title='Profile' /> */}
         <div className="page-content" >
           <Paper elevation={5} style={{width:"100%"}}  > 
           <Paper>

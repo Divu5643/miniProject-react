@@ -13,10 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store/store";
 import { getRandomColor } from "../../utils/StringFunction";
-
-const LoginPage = () => {
+import { userRole } from "../../utils/Interfaces/Iuser";
+const LoginPage:React.FC = () => {
   const authenticated = useSelector((state:RootState) => state.isAuthenticated);
-  const userRole = useSelector((state:RootState) => state.loginData.role);
+  const loggedInData = useSelector((state:RootState) => state.loginData);
   const [isRequestLoading, setIsRequestLoading] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -56,13 +56,13 @@ const LoginPage = () => {
         setError({ email: "", password: "" });
         Axios.post("/user/Loginuser", formData)
           .then((result) => {
-          
             const user: ILoginData = {
               username: result.data.name,
-              role: result.data.role,
+              role: userRole[result.data.roleId] ,
               email: result.data.email,
               userId: result.data.userid,
             };
+          
             const AvatarColor = getRandomColor();
             setIsRequestLoading(false);
             dispatch(setLoggedInUser({user,AvatarColor}));
@@ -70,7 +70,7 @@ const LoginPage = () => {
             navigate(`/${user.role}`);
           })
           .catch((error) => {
-            console.log("error:", error);
+            
             setIsRequestLoading(false); 
             if (error.code == "ERR_NETWORK") {
               setAlert({ open: true, message: error.message });
@@ -80,7 +80,7 @@ const LoginPage = () => {
           });
       })
       .catch((err: ValidationError) => {
-        console.log(err);
+        
         let errArr = err?.inner || [];
         let errorObj: any = {
           name: "",
@@ -90,7 +90,7 @@ const LoginPage = () => {
           department: "",
         };
         errArr.map((err) => {
-          console.log(typeof err);
+        
           errorObj[err?.path as string] = err?.message;
           setError(errorObj);
           setIsRequestLoading(false);
@@ -113,11 +113,13 @@ const LoginPage = () => {
 useEffect(()=>{
 if(authenticated){
 
-  navigate(`/${userRole}`);
+  navigate(`/${loggedInData.role}`);
 }
 },[])
   return (
     <>
+    <div className="body-container">
+
       <div className="signUpContainer">
         <div className="title">
           <h2>Sign in</h2>
@@ -129,8 +131,8 @@ if(authenticated){
             container
             spacing={3}
             sx={{ display: "flex", justifyContent: "center" }}
-          >
-            <Grid size={{ sm: 8, md: 8 }}>
+            >
+            <Grid size={{ sm: 8, md: 10 }}>
               <TextField
                 slotProps={{
                   input: {
@@ -150,9 +152,9 @@ if(authenticated){
                 }}
                 error={error.email == "" ? false : true}
                 helperText={error.email}
-              />
+                />
             </Grid>
-            <Grid size={{ sm: 8, md: 8 }}>
+            <Grid size={{ sm: 8, md: 10 }}>
               <TextField
                 label="Password"
                 variant="outlined"
@@ -167,7 +169,7 @@ if(authenticated){
                           onMouseDown={handleMouseDownPassword}
                           onMouseUp={handleMouseUpPassword}
                           edge="end"
-                        >
+                          >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
@@ -187,7 +189,7 @@ if(authenticated){
                 }}
                 error={error.password == "" ? false : true}
                 helperText={error.password}
-              />
+                />
             </Grid>
             <Grid size={{ sm: 8, md: 8 }}>
               <Button
@@ -197,7 +199,7 @@ if(authenticated){
                 onClick={() => {
                   handleSubmit();
                 }}
-              >
+                >
                 {isRequestLoading ? <CircularProgress /> : "Sign In"}
                 
               </Button>
@@ -205,13 +207,14 @@ if(authenticated){
           </Grid>
           {alert.open && (
             <CustomAlert
-              open={alert.open}
-              message={alert.message}
-              handleClose={handleClose}
+            open={alert.open}
+            message={alert.message}
+            handleClose={handleClose}
             />
           )}
         </div>
       </div>
+          </div>
     </>
   );
 };

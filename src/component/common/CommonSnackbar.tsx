@@ -2,7 +2,7 @@ import { IconButton, Snackbar } from '@mui/material'
 import React from 'react'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
-const CommonSnackbar = ({open,closeSnackbar}:{open:React.ComponentState,closeSnackbar:any}) => {
+const CommonSnackbar:React.FC<{open:React.ComponentState,closeSnackbar:any}> = ({open,closeSnackbar}) => {
   // const [open, setOpen] = React.useState({ open: false, message: "" });
   // const closeSnackbar = () => setOpen({ open: false, message: "" });
   // const openSnackBar = (message: string) =>
@@ -13,7 +13,7 @@ const CommonSnackbar = ({open,closeSnackbar}:{open:React.ComponentState,closeSna
     
     <Snackbar
     anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-    sx={{ maxWidth: "250px" }}
+    sx={{ maxWidth: "250px",zIndex:9999999 }}
     open={open.open}
     autoHideDuration={4000}
     onClose={closeSnackbar}

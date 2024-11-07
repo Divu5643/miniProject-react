@@ -13,15 +13,15 @@ import { IuserByManager } from "../../utils/Interfaces/IReviewer";
 import { Link, useNavigate } from "react-router-dom";
 import { ToTitleCase } from "../../utils/StringFunction";
 
-const ReviewerEmployeeTable = ({
-  employeeList,
-  formType,
-  assesment,
-}: {
+const ReviewerEmployeeTable:React.FC<{
   formType:"profile"|"review";
   employeeList: IuserByManager[];
   assesment: Boolean;
-}) => {
+}> = ({
+  employeeList,
+  formType,
+  assesment,
+} ) => {
   const navigate = useNavigate();
   return (
     <>
@@ -32,7 +32,8 @@ const ReviewerEmployeeTable = ({
               <TableCell className="table-header-data">Employee Name</TableCell>
               <TableCell className="table-header-data">Email</TableCell>
               <TableCell className="table-header-data">Department</TableCell>
-              <TableCell className="table-header-data">Action</TableCell>
+              {assesment && <TableCell className="table-header-data">Action</TableCell>}  
+              
             </TableRow>
           </TableHead>
           <TableBody>
@@ -46,9 +47,8 @@ const ReviewerEmployeeTable = ({
                   </TableCell>
                   <TableCell>{employee.email}</TableCell>
                   <TableCell>{ToTitleCase(employee.department)}</TableCell>
-                  <TableCell>
-                    {assesment ? (
-                      <Button
+                  {assesment && <TableCell> 
+                    <Button
                         onClick={() => {
                           navigate(
                             `/manager/employeeAssesment/${employee.employeeId}`
@@ -56,11 +56,7 @@ const ReviewerEmployeeTable = ({
                         }}
                       >
                         Review
-                      </Button>
-                    ) : (
-                      "Action"
-                    )}
-                  </TableCell>
+                      </Button></TableCell>}
                 </TableRow>
               );
             })}

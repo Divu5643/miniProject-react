@@ -1,7 +1,7 @@
 
 import Chart from "react-apexcharts";
 
-const AverageScoreRadialBar = ({data}:{data:Number}) => {
+const AverageScoreRadialBar:React.FC<{data:Number}> = ({data}) => {
   
   var options = {
   plotOptions: {
@@ -36,6 +36,14 @@ const AverageScoreRadialBar = ({data}:{data:Number}) => {
           opacity: 0.35
         }
       },
+      title:{
+        text:"Average Score",
+        align: 'center',
+        style:{
+            fontWeight: 'bold',
+        fontSize: '16px'
+        },
+    },
   
       dataLabels: {
         show: true,
@@ -80,7 +88,7 @@ const AverageScoreRadialBar = ({data}:{data:Number}) => {
     <>
     <div className="hello">
 
-    <Chart options={options} series={[data.toFixed(1)]} type='radialBar'  width={"350px"} />
+    <Chart options={options} series={[data.toFixed(1)]} type='radialBar'  width={"300px"} />
     </div>
     </>
   )

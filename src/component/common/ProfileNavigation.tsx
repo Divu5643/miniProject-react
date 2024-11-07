@@ -10,8 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/slice/userSlice";
-import toggleDarkMode from "../../utils/darkmodefunction";
-const ProfileNavigation = () => {
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+
+const ProfileNavigation:React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -47,20 +48,20 @@ const ProfileNavigation = () => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "center",
         }}
         transformOrigin={{
           vertical: "top",
           horizontal: "right",
         }}
       >
-        <ProfilePopoverContent color={color} />
+        <ProfilePopoverContent color={color} handleClose={handleClose} />
       </Popover>
     </>
   );
 };
 
-const ProfilePopoverContent = ({ color }: { color: string }) => {
+const ProfilePopoverContent:React.FC<{ color: string ,handleClose:Function }> = ({ color,handleClose } ) => {
   const loginData = useSelector((state: RootState) => state.loginData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const ProfilePopoverContent = ({ color }: { color: string }) => {
       <div className="popover-content">
         <div
           onClick={() => {
+            handleClose();
             navigate(`/${loginData.role}/selfProfile`);
           }}
           className="popover-Profile-info-container profile-info-item-container"
@@ -88,6 +90,7 @@ const ProfilePopoverContent = ({ color }: { color: string }) => {
         <Divider />
         <div
           onClick={() => {
+            handleClose();
             navigate(`/${loginData.role}/profileSettings`);
           }}
           className="profile-setting-container profile-info-item-container"
@@ -95,6 +98,19 @@ const ProfilePopoverContent = ({ color }: { color: string }) => {
           <span className="profile-info-item">
             {" "}
             <ManageAccountsRoundedIcon /> Profile Setting
+          </span>
+        </div>
+        <Divider />
+        <div
+          onClick={() => {
+            handleClose();
+            navigate(`/${loginData.role}/profileSettings`);
+          }}
+          className="profile-setting-container profile-info-item-container"
+        >
+          <span className="profile-info-item">
+            {" "}
+            <KeyRoundedIcon /> Change Password
           </span>
         </div>
         <Divider />
@@ -111,10 +127,10 @@ const ProfilePopoverContent = ({ color }: { color: string }) => {
             <LogoutRoundedIcon /> Logout
           </span>
         </div>
-        <Divider />
+        {/* <Divider />
         <div onClick={()=>{toggleDarkMode()}} className="dark-mode-container profile-info-item-container">
           <span className="profile-info-item"> DarkMode</span>{" "}
-        </div>
+        </div> */}
       </div>
     </>
   );

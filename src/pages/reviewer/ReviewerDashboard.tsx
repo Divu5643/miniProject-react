@@ -5,12 +5,15 @@ import AverageScoreRadialBar from '../../component/charts/AverageScoreRadialbar'
 import GoalsChart from '../../component/charts/GoalsChart'
 import Axios from '../../axios/config'
 import { IchartData, IgoalChartResponse, IpieChartData } from '../../utils/Interfaces/IChart';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux/store/store'
 import CommonSnackbar from '../../component/common/CommonSnackbar'
-import ContentHeader from '../../component/common/ContentHeader'
 
-const ReviewerDashboard = () => {
+import { setTitle } from '../../redux/slice/userSlice'
+import ReporteeRaidalBar from '../../component/charts/ReporteeRaidalBar'
+
+const ReviewerDashboard:React.FC = () => {
+  const dispatch = useDispatch();
   const [radialBarData,setRadialBarData] =  React.useState(0);
   const[goalChartData, setGoalChartData] = React.useState<IchartData[]>([]);
   // Snackbar
@@ -24,6 +27,7 @@ const ReviewerDashboard = () => {
 });
 const userId = useSelector((state:RootState)=>state.loginData.userId);
 useEffect(()=>{
+  dispatch(setTitle("Dashboard"));
     Axios.post("/performance/averagePerformanceByManager",{userID:userId}).then((response)=>{
       
       setRadialBarData(response.data);
@@ -66,16 +70,24 @@ const loadPieChartData = ()=>{
 
   return (
     <>
-      < ContentHeader title='Dashboard' />
+      {/* < ContentHeader title='Dashboard' /> */}
 
     <div className="page-content">
-      <Paper  elevation={6}  >
+      <Paper  elevation={6} sx={{padding:"1rem"}}  >
         <div className="piecharts" style={{display:"flex",justifyContent:"space-around",padding:"20px"}}>
-      <PieChart  pieChartdata ={pieChartData}/>
+        <Paper elevation={4}>
+      <PieChart  pieChartdata ={pieChartData} name={'Reportee Count'}/>
+      {/* <ReporteeRaidalBar pieChartdata ={pieChartData} /> */}
+      </ Paper>
+      <Paper elevation={4}>
+
         <AverageScoreRadialBar data={radialBarData} />
+      </Paper>
         </div>
         <div className="barChart">
+        <Paper elevation={4}>
           <GoalsChart  chartData={goalChartData}  />
+        </Paper>
         </div>
       </Paper>
     </div>

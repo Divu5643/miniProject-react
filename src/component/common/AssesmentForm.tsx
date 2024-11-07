@@ -1,7 +1,6 @@
 import { Button, Paper, TextField } from "@mui/material";
 import React from "react";
 import Grid from "@mui/material/Grid2";
-import { IconButton, Snackbar } from '@mui/material'
 import IAssesmentFormData from "../../utils/Interfaces/IAssesnment";
 import AssesmentSchema from "../../validation/AssesmentValidation";
 import { ValidationError } from "yup";
@@ -10,12 +9,11 @@ import { useParams } from "react-router-dom";
 import { RootState } from "../../redux/store/store";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@mui/joy";
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CommonSnackbar from "./CommonSnackbar";
 
 
 
-const AssesmentForm = () => {
+const AssesmentForm:React.FC = () => {
 
   const [open, setOpen] = React.useState({open:false,message:""});
   const closeSnackbar = () => setOpen({open:false,message:""});

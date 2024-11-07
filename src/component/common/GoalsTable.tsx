@@ -7,6 +7,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -18,6 +19,11 @@ import ModalDialog from "@mui/joy/ModalDialog";
 import { ModalClose } from "@mui/joy";
 import Axios from "../../axios/config";
 import { printDate, ToTitleCase } from "../../utils/StringFunction";
+import { Delete } from "@mui/icons-material";
+import DeleteModal from "./DeleteModal";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 const GoalsTable = ({
   goalList,
@@ -25,18 +31,33 @@ const GoalsTable = ({
   openSnackBar,
   permanaentGoalList,
   setPermanaentGoalList,
+  totalCount,
+  filterAndSearch,
+  setFilterAndSearch
 }: {
   goalList: IshowGoal[];
   setGoalList: React.Dispatch<React.SetStateAction<IshowGoal[]>>;
   openSnackBar: Function;
   permanaentGoalList:IshowGoal[];
   setPermanaentGoalList:Function;
+  totalCount:number,
+   filterAndSearch:any,
+  setFilterAndSearch:any
 }) => {
   const [open, setOpen] = React.useState({
     open: false,
     id: 0,
     status: "",
   });
+
+  const navigate = useNavigate();
+  const loginData = useSelector((state:RootState)=>state.loginData);
+// For Modal
+const [openModal, setOpenModal] = React.useState({open:false,userId:0});
+const handleOpenModal = (userId:number) => setOpenModal({open:true,userId});
+const handleCloseModal = () => setOpenModal({open:false,userId:0});
+
+
   const handleEdit = (newStatus: string, userId: Number) => {
     Axios.put("/goal/editGoal", { status: newStatus, userId: userId })
       .then((response) => {
@@ -61,13 +82,36 @@ const GoalsTable = ({
           return goal.goalId !== goalId;
         });
         openSnackBar("Goal deleted");
+        handleCloseModal();
         setPermanaentGoalList([...newList]);
         setGoalList([...newList]);
       })
       .catch((error) => {
+        handleCloseModal();
         openSnackBar(error.message);
       });
   };
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number,
+  ) => {
+    setFilterAndSearch({...filterAndSearch,PageNumber: newPage});
+    // setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+  
+    setFilterAndSearch({...filterAndSearch,
+       RowCount: parseInt(event.target.value, 10),
+       PageNumber:0});
+
+  };
+
+
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -123,34 +167,45 @@ const GoalsTable = ({
                   {ToTitleCase(goal.assignerName)}
                     
                   </TableCell>
-                  <TableCell align="left" className="table-cell">
-                    <Button
-                      onClick={() => {
-                        setOpen({
-                          open: true,
-                          id: goal.goalId,
-                          status: goal.status,
-                        });
-                      }}
-                    >
-                      Edit
+                  <TableCell align="center" className="table-cell">
+                  <Button onClick={()=>{
+                    navigate(`/${loginData.role}/goalDetails/${goal.goalId}`,{state:goal})
+                  }} >
+                      Details
                     </Button>
-                    |
-                    <Button
-                      color="error"
-                      onClick={() => {
-                        handleDelete(goal.goalId);
-                      }}
-                    >
-                      Delete
-                    </Button>
+
                   </TableCell>
                 </TableRow>
               );
             })}
+             <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                colSpan={5}
+                count={totalCount}
+                rowsPerPage={filterAndSearch.RowCount}
+                page={filterAndSearch.PageNumber}
+                slotProps={{
+                  select: {
+                    inputProps: {
+                      'aria-label': 'rows per page',
+                    },
+                    native: true,
+                  },
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
+      <DeleteModal
+      open={openModal}
+      handleClose={handleCloseModal}
+      handleDelete={handleDelete}
+
+       />
       <Modal
         open={open.open}
         onClose={() => setOpen({ open: false, id: 0, status: "" })}
@@ -189,6 +244,7 @@ const GoalsTable = ({
           </div>
         </ModalDialog>
       </Modal>
+
     </>
   );
 };

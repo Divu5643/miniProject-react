@@ -11,6 +11,7 @@ export interface ProjectState {
   isAuthenticated: boolean;
   loginData: ILoginData;
   AvatarColor:string;
+  title:string;
 }
 
 const initialState: ProjectState = {
@@ -19,6 +20,7 @@ const initialState: ProjectState = {
   employeeList:[],
   AvatarColor:"black",
   loginData: { username: "", role: "", email: "", userId: 0 },
+  title:"Performance Review System",
 };
 
 export const userSlice = createSlice({
@@ -43,10 +45,13 @@ export const userSlice = createSlice({
       state.loginData = initialState.loginData;
       state.isAuthenticated = false;
       return state;
+    }, setTitle: (state,action:PayloadAction<string>) => {
+      state.title = action.payload;
+      return state;
     },
   },
 });
 
-export const { setUserList,setEmployeeList, setLoggedInUser, logoutUser } = userSlice.actions;
+export const { setUserList,setEmployeeList, setLoggedInUser, logoutUser,setTitle } = userSlice.actions;
 
 export default userSlice.reducer;

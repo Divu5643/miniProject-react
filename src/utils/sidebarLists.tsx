@@ -4,6 +4,8 @@ import FlagIcon from '@mui/icons-material/Flag';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GradingRoundedIcon from '@mui/icons-material/GradingRounded';
+import BallotIcon from '@mui/icons-material/Ballot';
+import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 
 const AdminList = [
   {
@@ -25,6 +27,16 @@ const AdminList = [
     navName: "Performance",
     navIcon: <GradingRoundedIcon />,
     navLink: "/admin/performance",
+  },
+  {
+    navName: "Department Management",
+    navIcon: <BallotIcon />,
+    navLink: "/admin/department",
+  },
+  {
+    navName: "Designation Management",
+    navIcon: <ContactEmergencyIcon />,
+    navLink: "/admin/designation",
   },
   // {
   //   navName: "Profile",

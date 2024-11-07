@@ -1,7 +1,7 @@
 import { Box, Modal, Typography } from '@mui/material'
 import React from 'react'
 
-const AddReviewModal = ({open, setOpen}:any) => {
+const AddReviewModal:React.FC = ({open, setOpen}:any) => {
     const handleClose = () => setOpen(false)
   return (
     <Modal

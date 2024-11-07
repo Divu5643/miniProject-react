@@ -1,25 +1,31 @@
-import { Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material'
-import React, { useEffect } from 'react'
-import Axios from '../../axios/config';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store/store';
-import { IPerfomanceData } from '../../utils/Interfaces/IAssesnment';
+import { Paper, Tab, Tabs } from '@mui/material'
+import React  from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+
 import EmployeeReviews from './EmployeeReviewHistory';
 import GoalProgress from './GoalProgress';
-import ProfileNavigation from '../../component/common/ProfileNavigation';
-import ContentHeader from '../../component/common/ContentHeader';
+import { setTitle } from '../../redux/slice/userSlice';
+import CommonSnackbar from '../../component/common/CommonSnackbar';
 
-const EmployeeDashboard = () => {
+const EmployeeDashboard:React.FC = () => {
+  const dispatch = useDispatch();
 
+  dispatch(setTitle("Dashboard"));
   const [tabValue, setTabValue] = React.useState("reviews");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
+  // For snackbar
+    const [open, setOpen] = React.useState({ open: false, message: "" });
+  const closeSnackbar = () => setOpen({ open: false, message: "" });
+  const openSnackBar = (message: string) =>
+    setOpen({ open: true, message: message });
+
   return (
     
    <>
- < ContentHeader title='Dashboard' />
+ {/* < ContentHeader title='Dashboard' /> */}
       <div className="page-content">
         <Paper elevation={6} sx={{padding:"1rem"}} >
         <Tabs
@@ -36,6 +42,7 @@ const EmployeeDashboard = () => {
 
         </Paper>
       </div>
+      <CommonSnackbar open={open} closeSnackbar={closeSnackbar} />
    </>
   )
 }

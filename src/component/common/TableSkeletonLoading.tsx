@@ -1,7 +1,7 @@
 import { Skeleton, TableCell, TableRow } from "@mui/material";
 import React from "react";
 
-const TableSkeletonLoading = ( {column = 0} : {column:number}) => {
+const TableSkeletonLoading:React.FC<{column:number}> = ( {column = 0}  ) => {
   var list=[];
   for(var i = 0; i < column;i++){
     list.push(i);

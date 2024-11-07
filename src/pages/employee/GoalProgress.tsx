@@ -7,7 +7,7 @@ import { Box, LinearProgress, Paper, Typography } from "@mui/material";
 import CommonSnackbar from "../../component/common/CommonSnackbar";
 import NoData from "../../component/common/NoData";
 
-const GoalProgress = () => {
+const GoalProgress:React.FC = () => {
   const [open, setOpen] = React.useState({ open: false, message: "" });
   const closeSnackbar = () => setOpen({ open: false, message: "" });
   const openSnackBar = (message: string) =>
@@ -19,7 +19,7 @@ const GoalProgress = () => {
     console.log("userId : ", userID);
     Axios.post("/goal/getGoalsForEmployee", { userID: userID })
       .then((response) => {
-        console.log("response:", response.data);
+        // console.log("response:", response.data);
         setGoalList(response.data);
       })
       .catch((error) => {
